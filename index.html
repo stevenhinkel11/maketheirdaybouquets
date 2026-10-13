@@ -78,6 +78,11 @@
   .duo figure:last-child{margin-top:clamp(50px,10vw,160px);aspect-ratio:3/4}
 
   .trio.more{margin-top:clamp(70px,10vw,140px);grid-template-columns:repeat(2,1fr);max-width:900px;margin-left:auto;margin-right:auto}
+  .trio .cell{text-align:center}
+  .trio.more2 .cell{margin-top:clamp(40px,9vw,140px)}
+  .trio .cell figure{margin:0;text-align:left}
+  .btn.small{margin-top:18px;padding:9px 20px;font-size:11px;letter-spacing:.18em}
+  @media(max-width:720px){.trio.more2 .cell{margin-top:40px}}
   .trio.more2{margin-top:0}
   .trio.more2 + .trio{margin-top:clamp(70px,10vw,140px)}
   .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
@@ -148,7 +153,10 @@
 
 <section class="trio more2">
   <figure class="rv"><img src="assets/img/pitcher.jpg" srcset="assets/img/800/pitcher.jpg 800w, assets/img/1200/pitcher.jpg 1200w, assets/img/pitcher.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="White daisies, sunflowers and goldenrod in a galvanized pitcher on a deck rail"></figure>
-  <figure class="rv"><img src="assets/img/pink-bowl.jpg" srcset="assets/img/800/pink-bowl.jpg 800w, assets/img/1200/pink-bowl.jpg 1200w, assets/img/pink-bowl.jpg 1312w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"></figure>
+  <div class="cell rv">
+    <figure><img src="assets/img/pink-bowl.jpg" srcset="assets/img/800/pink-bowl.jpg 800w, assets/img/1200/pink-bowl.jpg 1200w, assets/img/pink-bowl.jpg 1312w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"></figure>
+    <a class="btn solid small" href="order.html">Order Flowers</a>
+  </div>
   <figure class="rv"><img src="assets/img/sunflower-field.jpg" srcset="assets/img/800/sunflower-field.jpg 800w, assets/img/1200/sunflower-field.jpg 1200w, assets/img/sunflower-field.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="A dirt path between rows of sunflowers and corn with redwoods in the distance"></figure>
 </section>
 
