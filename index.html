@@ -78,6 +78,11 @@
   .duo figure:last-child{margin-top:clamp(50px,10vw,160px);aspect-ratio:3/4}
 
   .trio.more{margin-top:clamp(70px,10vw,140px)}
+  .wide{padding:clamp(20px,4vw,60px) var(--gutter) 0}
+  .wide figure{max-width:1100px;margin:0 auto;overflow:hidden;background:var(--paper)}
+  .wide img{height:auto;aspect-ratio:3/2}
+  .trio.more2{margin-top:clamp(70px,10vw,140px)}
+  .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
   .band{position:relative;margin-top:clamp(70px,10vw,140px);height:min(90vh,820px);overflow:hidden}
   .band img{filter:brightness(1.14) saturate(1.1);object-position:50% 45%}
   /* closing */
@@ -144,6 +149,10 @@
   <p class="rv">Bouquets made with care <em>for the people you love</em></p>
 </section>
 
+<section class="wide">
+  <figure class="rv"><img src="assets/img/loved-ones.jpg" srcset="assets/img/800/loved-ones.jpg 800w, assets/img/1200/loved-ones.jpg 1200w, assets/img/loved-ones.jpg 1536w" sizes="(max-width:1200px) 92vw, 1100px" loading="lazy" alt="A smiling woman at home beside a bright arrangement of pink and orange roses, marigolds and gerbera daisies in a white bowl"></figure>
+</section>
+
 <section class="trio">
   <figure class="rv"><img src="assets/img/7163.jpg" srcset="assets/img/800/7163.jpg 800w, assets/img/1200/7163.jpg 1200w, assets/img/7163.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Yellow roses and sunflowers in a white bowl beside a window"></figure>
   <figure class="rv"><img src="assets/img/7145.jpg" srcset="assets/img/800/7145.jpg 800w, assets/img/1200/7145.jpg 1200w, assets/img/7145.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Roses, sunflowers and gerbera arranged in a small pumpkin"></figure>
@@ -161,11 +170,18 @@
   <figure class="rv"><img src="assets/img/7167.jpg" srcset="assets/img/800/7167.jpg 800w, assets/img/1200/7167.jpg 1200w, assets/img/7167.jpg 1600w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Sunflower and magenta gerbera against white wood"></figure>
 </section>
 
+<section class="trio more2">
+  <figure class="rv"><img src="assets/img/pitcher.jpg" srcset="assets/img/800/pitcher.jpg 800w, assets/img/1200/pitcher.jpg 1200w, assets/img/pitcher.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="White daisies, sunflowers and goldenrod in a galvanized pitcher on a deck rail"></figure>
+  <figure class="rv"><img src="assets/img/pink-bowl.jpg" srcset="assets/img/800/pink-bowl.jpg 800w, assets/img/1200/pink-bowl.jpg 1200w, assets/img/pink-bowl.jpg 1312w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"></figure>
+  <figure class="rv"><img src="assets/img/sunflower-field.jpg" srcset="assets/img/800/sunflower-field.jpg 800w, assets/img/1200/sunflower-field.jpg 1200w, assets/img/sunflower-field.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="A dirt path between rows of sunflowers and corn with redwoods in the distance"></figure>
+</section>
+
 <section class="band">
   <img src="assets/img/7165.jpg" srcset="assets/img/800/7165.jpg 800w, assets/img/1200/7165.jpg 1200w, assets/img/7165.jpg 1600w" sizes="100vw" loading="lazy" alt="Pink gerbera and yellow roses in a bowl by a sunlit window">
 </section>
 
 <section class="close">
+  <img class="logo rv" src="assets/img/logo.jpg" width="220" height="220" loading="lazy" alt="Make Their Day Bouquets logo: a smiling girl holding a colorful bouquet">
   <h2 class="rv">Let’s make someone’s day</h2>
   <button class="btn solid rv" data-contact>Contact</button>
 
