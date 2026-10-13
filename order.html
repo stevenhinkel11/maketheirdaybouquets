@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order Flowers — Make Their Day Bouquets</title>
+<meta name="description" content="Order custom flowers from Make Their Day Bouquets. Tell us your occasion, your vision and your budget.">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F2W7M2RE34');
+</script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#f6f0e6;--paper:#efe6d6;--ink:#2b2a26;--muted:#7a7468;--marigold:#d98a1f;--marigold-dk:#b9700f;--line:rgba(43,42,38,.22);--serif:'Cormorant Garamond',Georgia,serif;--sans:'Jost',system-ui,sans-serif;--gutter:clamp(18px,4vw,56px)}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--cream);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+  header{display:flex;justify-content:space-between;align-items:center;padding:14px var(--gutter);border-bottom:1px solid rgba(43,42,38,.12)}
+  header a{text-decoration:none;color:inherit}
+  .brand{font:italic 400 clamp(20px,2.4vw,27px)/1 var(--serif)}
+  .back{font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+  main{max-width:640px;margin:0 auto;padding:clamp(44px,7vw,90px) var(--gutter) clamp(70px,10vw,130px)}
+  h1{font:italic 400 clamp(44px,7vw,76px)/1 var(--serif);margin-bottom:12px}
+  .sub{color:var(--muted);margin-bottom:44px}
+  form{display:grid;gap:30px}
+  .field{display:grid;gap:8px;border:0;padding:0;min-width:0}
+  label,legend{font-weight:500;font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:0}
+  .req{color:var(--marigold-dk)}
+  input[type=text],input[type=email],input[type=date],textarea{width:100%;font:inherit;font-size:17px;color:var(--ink);background:#fbf8f2;border:1.5px solid var(--line);border-radius:4px;padding:14px 16px;transition:border-color .2s,box-shadow .2s}
+  textarea{min-height:150px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--marigold);box-shadow:0 0 0 3px rgba(217,138,31,.2)}
+  .opts{display:grid;gap:10px;margin-top:2px}
+  .opt{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fbf8f2;border:1.5px solid var(--line);border-radius:4px;cursor:pointer;font-size:17px;letter-spacing:0;text-transform:none;font-weight:400;transition:border-color .2s,background .2s}
+  .opt:hover{border-color:var(--marigold)}
+  .opt input{accent-color:var(--marigold);width:19px;height:19px;flex:none;margin:0}
+  .opt:has(input:checked){border-color:var(--marigold);background:#fdf3e1}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+  .btn{font:500 12px var(--sans);letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border:1.5px solid var(--marigold);background:var(--marigold);color:#fff;padding:16px 34px;border-radius:999px;transition:.25s;justify-self:start}
+  .btn:hover{background:var(--marigold-dk);border-color:var(--marigold-dk)}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .note{font-size:14px;color:var(--muted)}
+  .msg{display:none;padding:22px 24px;border-radius:4px;background:#fdf3e1;border:1.5px solid var(--marigold)}
+  .msg.show{display:block}
+  .msg h2{font:italic 400 34px/1.1 var(--serif);margin-bottom:6px}
+  .err{color:#a3341f;font-size:15px;display:none}
+  .err.show{display:block}
+  footer{padding:26px var(--gutter);border-top:1px solid rgba(43,42,38,.12);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{text-decoration:none}footer a:hover{color:var(--marigold-dk)}
+  a.inl{color:var(--marigold-dk)}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./">Make Their Day Bouquets</a>
+  <a class="back" href="./">← Back</a>
+</header>
+
+<main>
+  <h1>Order Flowers</h1>
+  <p class="sub">Tell me about your occasion and I'll be in touch to make it beautiful.</p>
+
+  <div class="msg" id="done" role="status" tabindex="-1">
+    <h2>Thank you!</h2>
+    <p id="done-text">Your order request is on its way. I'll be in touch soon.</p>
+  </div>
+
+  <form id="order" novalidate>
+    <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <div class="field">
+      <label for="name">Your name <span class="req">*</span></label>
+      <input type="text" id="name" name="name" autocomplete="name" required>
+    </div>
+
+    <div class="field">
+      <label for="email">Email address <span class="req">*</span></label>
+      <input type="email" id="email" name="email" autocomplete="email" required>
+    </div>
+
+    <fieldset class="field">
+      <legend>What are you ordering? <span class="req">*</span></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="ordering" value="Hand-wrapped bouquet (starting at $20)" required> Hand-wrapped bouquet (starting at $20)</label>
+        <label class="opt"><input type="radio" name="ordering" value="Vase arrangement"> Vase arrangement</label>
+        <label class="opt"><input type="radio" name="ordering" value="Large arrangement or event flowers"> Large arrangement or event flowers</label>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label for="budget">What's your budget?</label>
+      <input type="text" id="budget" name="budget" inputmode="text" placeholder="$">
+    </div>
+
+    <div class="field">
+      <label for="date">When do you need your flowers?</label>
+      <input type="date" id="date" name="date" placeholder="Choose a date">
+    </div>
+
+    <div class="field">
+      <label for="details">Tell me what you have in mind</label>
+      <textarea id="details" name="details"></textarea>
+    </div>
+
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn" id="send" type="submit">Send order request</button>
+    <p class="note">This is a request, not a payment. I'll reply by email to confirm details and pricing.</p>
+  </form>
+</main>
+
+<footer>
+  <span>© <span id="yr"></span> Make Their Day Bouquets</span>
+  <span><a href="privacy.html">Privacy</a></span>
+</footer>
+
+<script>
+  // To receive orders straight in your inbox, create a free form at https://formspree.io
+  // (or web3forms.com) and paste its endpoint below, e.g. "https://formspree.io/f/abcdwxyz".
+  // While this is empty, submitting opens the visitor's email app with the order pre-filled.
+  const FORM_ENDPOINT = "";
+  const EMAIL = "maketheirdaybouquets@gmail.com";
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  const dateEl = document.getElementById('date');
+  const t = new Date(); t.setMinutes(t.getMinutes() - t.getTimezoneOffset());
+  dateEl.min = t.toISOString().slice(0, 10);
+
+  const form = document.getElementById('order'), err = document.getElementById('err'),
+        done = document.getElementById('done'), doneText = document.getElementById('done-text'),
+        send = document.getElementById('send');
+
+  const showErr = m => { err.textContent = m; err.classList.add('show'); };
+  const nice = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    err.classList.remove('show');
+    const f = new FormData(form);
+    if (f.get('_gotcha')) return;
+    if (!f.get('name').trim()) return showErr('Please enter your name.');
+    if (!/^\S+@\S+\.\S+$/.test(f.get('email').trim())) return showErr('Please enter a valid email address.');
+    if (!f.get('ordering')) return showErr('Please choose what you are ordering.');
+
+    const fields = {
+      Name: f.get('name').trim(), Email: f.get('email').trim(), Ordering: f.get('ordering'),
+      Budget: (f.get('budget') || '').trim() || '—', 'Needed by': nice(f.get('date')) || '—',
+      Details: (f.get('details') || '').trim() || '—'
+    };
+
+    if (FORM_ENDPOINT) {
+      send.disabled = true; send.textContent = 'Sending…';
+      try {
+        const body = new FormData();
+        Object.entries(fields).forEach(([k, v]) => body.append(k, v));
+        body.append('_subject', 'New flower order request from ' + fields.Name);
+        body.append('_replyto', fields.Email);
+        const r = await fetch(FORM_ENDPOINT, {method: 'POST', body, headers: {Accept: 'application/json'}});
+        if (!r.ok) throw new Error();
+        form.style.display = 'none'; done.classList.add('show'); done.focus();
+        if (window.gtag) gtag('event', 'generate_lead', {method: 'order_form'});
+      } catch (_) {
+        send.disabled = false; send.textContent = 'Send order request';
+        showErr('Something went wrong sending your request. Please try again, or email ' + EMAIL + '.');
+      }
+    } else {
+      const lines = Object.entries(fields).map(([k, v]) => k + ': ' + v).join('\n');
+      location.href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent('Flower order request from ' + fields.Name) + '&body=' + encodeURIComponent(lines);
+      doneText.innerHTML = 'Your email app should now open with your request filled in. Just press send. If nothing opens, email us at <a class="inl" href="mailto:' + EMAIL + '">' + EMAIL + '</a>.';
+      form.style.display = 'none'; done.classList.add('show'); done.focus();
+    }
+  });
+</script>
+</body>
+</html>
