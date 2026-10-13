@@ -83,8 +83,12 @@
   .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
   .band{position:relative;margin-top:clamp(70px,10vw,140px);height:min(90vh,820px);overflow:hidden}
   .band img{filter:brightness(1.14) saturate(1.1);object-position:50% 45%}
+  .budget{max-width:680px;margin:0 auto;padding:clamp(80px,12vw,160px) var(--gutter) 0;text-align:center}
+  .budget h2{font:italic 400 clamp(36px,5.4vw,68px)/1.05 var(--serif);margin-bottom:clamp(24px,3.5vw,40px)}
+  .budget p{font-size:clamp(16px,1.5vw,18px);line-height:1.75;color:#4a4740;margin-bottom:18px}
+  .budget p.kicker{font:italic 400 clamp(24px,3vw,34px)/1.25 var(--serif);color:var(--marigold-dk);margin-top:clamp(28px,4vw,44px)}
   /* closing */
-  .close{padding:clamp(100px,16vw,230px) var(--gutter);text-align:center}
+  .close{padding:clamp(70px,11vw,160px) var(--gutter) clamp(100px,16vw,230px);text-align:center}
   .close h2{font:italic 400 clamp(44px,8vw,120px)/.95 var(--serif);margin-bottom:40px}
   footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:26px var(--gutter);border-top:1px solid rgba(43,42,38,.15);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
   footer a{text-decoration:none}footer a:hover{color:var(--marigold-dk)}
@@ -171,6 +175,16 @@
 
 <section class="band">
   <img src="assets/img/7165.jpg" srcset="assets/img/800/7165.jpg 800w, assets/img/1200/7165.jpg 1200w, assets/img/7165.jpg 1600w" sizes="100vw" loading="lazy" alt="Pink gerbera and yellow roses in a bowl by a sunlit window">
+</section>
+
+<section class="budget">
+  <h2 class="rv">Beautiful Flowers for Every Budget</h2>
+  <div class="rv">
+    <p>Every bouquet at Make Their Day Bouquets is thoughtfully designed and one of a kind. Whether you're looking for a sweet little gesture or a grand, show-stopping arrangement, I'd love to create something special for you.</p>
+    <p>Hand-wrapped bouquets start at just $20, with larger bouquets, vase arrangements, and custom floral designs available at a price that works for you.</p>
+    <p>Because every arrangement is unique, there are no set prices beyond our starting point. Simply share your occasion, your vision, and your budget, and we'll create something beautiful together.</p>
+    <p class="kicker">From simple and sweet to wonderfully extravagant, every occasion deserves flowers!</p>
+  </div>
 </section>
 
 <section class="close">
