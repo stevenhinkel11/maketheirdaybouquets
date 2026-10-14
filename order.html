@@ -92,6 +92,7 @@
         <label class="opt"><input type="radio" name="ordering" value="Hand-wrapped bouquet (starting at $20)" required> Hand-wrapped bouquet (starting at $20)</label>
         <label class="opt"><input type="radio" name="ordering" value="Vase arrangement"> Vase arrangement</label>
         <label class="opt"><input type="radio" name="ordering" value="Large arrangement or event flowers"> Large arrangement or event flowers</label>
+        <label class="opt"><input type="radio" name="ordering" value="Pumpkin arrangement"> Pumpkin arrangement</label>
         <label class="opt"><input type="radio" name="ordering" value="Flower subscription"> Flower subscription (weekly, every other week, or monthly)</label>
       </div>
     </fieldset>
@@ -130,6 +131,11 @@
   const EMAIL = "maketheirdaybouquets@gmail.com";
 
   document.getElementById('yr').textContent = new Date().getFullYear();
+  if (new URLSearchParams(location.search).get('type') === 'pumpkin') {
+    document.querySelector('input[value="Pumpkin arrangement"]').checked = true;
+    document.querySelector('h1').textContent = 'Order Pumpkin Arrangements';
+    document.title = 'Order Pumpkin Arrangements — Make Their Day Bouquets';
+  }
   if (new URLSearchParams(location.search).get('type') === 'subscription') {
     document.querySelector('input[value="Flower subscription"]').checked = true;
     document.querySelector('h1').textContent = 'Start a Subscription';

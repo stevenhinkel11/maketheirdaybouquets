@@ -80,9 +80,10 @@
   .trio.more{margin-top:clamp(70px,10vw,140px);grid-template-columns:repeat(2,1fr);max-width:900px;margin-left:auto;margin-right:auto}
   .trio .cell{text-align:center}
   .trio.more2 .cell{margin-top:clamp(40px,9vw,140px)}
+  .trio:not(.more):not(.more2) .cell{margin-top:clamp(40px,9vw,140px)}
   .trio .cell figure{margin:0;text-align:left}
   .btn.small{margin-top:18px;padding:9px 20px;font-size:11px;letter-spacing:.18em}
-  @media(max-width:720px){.trio.more2 .cell{margin-top:40px}}
+  @media(max-width:720px){.trio.more2 .cell,.trio:not(.more):not(.more2) .cell{margin-top:40px}}
   .trio.more2{margin-top:0}
   .trio.more2 + .trio{margin-top:clamp(70px,10vw,140px)}
   .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
@@ -178,7 +179,10 @@
 
 <section class="trio">
   <figure class="rv"><img src="assets/img/7163.jpg" srcset="assets/img/800/7163.jpg 800w, assets/img/1200/7163.jpg 1200w, assets/img/7163.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Yellow roses and sunflowers in a white bowl beside a window"></figure>
-  <figure class="rv"><img src="assets/img/7145.jpg" srcset="assets/img/800/7145.jpg 800w, assets/img/1200/7145.jpg 1200w, assets/img/7145.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Roses, sunflowers and gerbera arranged in a small pumpkin"></figure>
+  <div class="cell rv">
+    <figure><img src="assets/img/7145.jpg" srcset="assets/img/800/7145.jpg 800w, assets/img/1200/7145.jpg 1200w, assets/img/7145.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Roses, sunflowers and gerbera arranged in a small pumpkin"></figure>
+    <a class="btn solid small" href="order.html?type=pumpkin">Order Pumpkin Arrangements!</a>
+  </div>
   <figure class="rv"><img src="assets/img/7166.jpg" srcset="assets/img/800/7166.jpg 800w, assets/img/1200/7166.jpg 1200w, assets/img/7166.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Overhead view of a bouquet with peach roses and daisies"></figure>
 </section>
 
