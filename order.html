@@ -124,10 +124,9 @@
 </footer>
 
 <script>
-  // To receive orders straight in your inbox, create a free form at https://formspree.io
-  // (or web3forms.com) and paste its endpoint below, e.g. "https://formspree.io/f/abcdwxyz".
-  // While this is empty, submitting opens the visitor's email app with the order pre-filled.
-  const FORM_ENDPOINT = "";
+  // Orders are delivered by Formspree (formspree.io) to the business inbox.
+  // If FORM_ENDPOINT is ever emptied, the form falls back to opening the visitor's email app.
+  const FORM_ENDPOINT = "https://formspree.io/f/mqpeywap";
   const EMAIL = "maketheirdaybouquets@gmail.com";
 
   document.getElementById('yr').textContent = new Date().getFullYear();
