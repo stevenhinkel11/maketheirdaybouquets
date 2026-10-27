@@ -87,6 +87,14 @@
   .trio.pair2{grid-template-columns:repeat(2,1fr);max-width:900px;margin-left:auto;margin-right:auto}
   .trio.pair2 .cell{margin-top:0}
   .trio.pair2 figure:nth-child(2){margin-top:clamp(40px,9vw,140px)}
+  .pumpkins{max-width:1100px;margin:clamp(70px,10vw,140px) auto 0;padding:0 var(--gutter);text-align:center}
+  .pumpkins figure{overflow:hidden;background:var(--paper);text-align:left}
+  .pumpkins .wide{aspect-ratio:1448/1086}
+  .pumpkins .pair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.6vw,22px);max-width:780px;margin:clamp(12px,1.8vw,24px) auto clamp(30px,4vw,48px)}
+  .pumpkins .pair figure{aspect-ratio:3/4}
+  .pumpkins .pair figure:nth-child(2){margin-top:clamp(30px,5vw,70px)}
+  .pumpkins figure img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+  .pumpkins figure:hover img{transform:scale(1.04)}
   .trio.more2{margin-top:0}
   .trio.more2 + .trio{margin-top:clamp(70px,10vw,140px)}
   .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
@@ -186,6 +194,15 @@
     <a class="btn solid small" href="order.html?type=pumpkin">Order Pumpkin Arrangements!</a>
   </div>
   <figure class="rv"><img src="assets/img/7166.jpg" srcset="assets/img/800/7166.jpg 800w, assets/img/1200/7166.jpg 1200w, assets/img/7166.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Overhead view of a bouquet with peach roses and daisies"></figure>
+</section>
+
+<section class="pumpkins">
+  <figure class="rv wide"><img src="assets/img/pumpkin-collage.jpg" srcset="assets/img/800/pumpkin-collage.jpg 800w, assets/img/1200/pumpkin-collage.jpg 1200w, assets/img/pumpkin-collage.jpg 1448w" sizes="(max-width:1100px) 92vw, 1100px" loading="lazy" alt="Six pumpkin flower arrangements on a striped cloth in front of a wooden bench, with close-ups of pink roses and thistle in a green pumpkin, orange blooms in a white pumpkin, and pink dahlias in an orange pumpkin"></figure>
+  <div class="pair">
+    <figure class="rv"><img src="assets/img/succulent-pumpkin-stripes.jpg" srcset="assets/img/800/succulent-pumpkin-stripes.jpg 800w, assets/img/1200/succulent-pumpkin-stripes.jpg 1200w, assets/img/succulent-pumpkin-stripes.jpg 1086w" sizes="(max-width:720px) 46vw, 380px" loading="lazy" alt="A pumpkin topped with succulents and moss on a black and white striped cloth"></figure>
+    <figure class="rv"><img src="assets/img/succulent-pumpkin-deck.jpg" srcset="assets/img/800/succulent-pumpkin-deck.jpg 800w, assets/img/1200/succulent-pumpkin-deck.jpg 1200w, assets/img/succulent-pumpkin-deck.jpg 1086w" sizes="(max-width:720px) 46vw, 380px" loading="lazy" alt="A pumpkin planted with succulents and moss on a striped table on a sunny deck"></figure>
+  </div>
+  <a class="btn solid rv" href="order.html?type=pumpkin">Order Pumpkin Arrangements!</a>
 </section>
 
 <section class="duo">
