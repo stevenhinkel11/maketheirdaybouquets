@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/shop.css?v=4">
+<link rel="stylesheet" href="css/shop.css?v=5">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
 <script>
@@ -102,7 +102,7 @@
   <iframe id="pay-frame" title="Square secure checkout" allow="payment"></iframe>
 </dialog>
 
-<script src="js/shop.js?v=4"></script>
+<script src="js/shop.js?v=5"></script>
 <script>
   const { Cart, money, find, ZIPS, zipCity, dateProblem, earliestDate, latestDate, CHECKOUT_API } = MTD;
   const $ = id => document.getElementById(id);
@@ -182,7 +182,10 @@
       const r = await fetch(CHECKOUT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok || !j.url) throw new Error((j.error || 'Something went wrong. Please try again.') + (j.detail ? ' [Test mode detail: ' + j.detail + ']' : ''));
-      if (j.embedUrl) {
+      // Phones and Safari get Square's full page (Apple Pay / Google Pay don't work inside an embedded frame).
+      const ua = navigator.userAgent;
+      const useFullPage = matchMedia('(max-width: 820px)').matches || /iPhone|iPad|iPod|Android|Mobile/i.test(ua) || (/Safari/i.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|Android/i.test(ua));
+      if (j.embedUrl && !useFullPage) {
         // Show Square's secure checkout inside our page so the customer never leaves the site.
         const m = $('pay-modal'), fr = $('pay-frame');
         fr.src = j.embedUrl; $('pay-new').href = j.url; m.showModal();
