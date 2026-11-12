@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop — Make Their Day Bouquets</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Order flower arrangements from Make Their Day Bouquets for delivery in Santa Cruz County.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shop.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F2W7M2RE34');
+</script>
+</head>
+<body>
+<header>
+  <a class="brand" href="./">Make Their Day Bouquets</a>
+  <div class="nav">
+    <a href="./">Home</a>
+    <button class="cartbtn" id="open-cart" type="button">Cart<span class="n" id="cart-n">0</span></button>
+  </div>
+</header>
+
+<main>
+  <h1>Shop</h1>
+  <p class="sub">Fresh, hand-designed arrangements delivered to your door anywhere in Santa Cruz County. Delivery is free, and orders placed before 11:00 AM are eligible for same-day delivery.</p>
+  <div class="grid" id="grid"></div>
+  <p class="note" style="margin-top:36px">Looking for something custom, or an event? <a href="order.html" style="color:var(--marigold-dk)">Request a custom order</a>.</p>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping cart">
+  <div class="hd"><h2>Your Cart</h2><button type="button" id="close-cart">Close ✕</button></div>
+  <div class="body" id="cart-body"></div>
+  <div class="ft" id="cart-ft"></div>
+</aside>
+
+<footer>
+  <span>© <span id="yr"></span> Make Their Day Bouquets</span>
+  <span><a href="privacy.html">Privacy</a></span>
+</footer>
+
+<script src="js/shop.js"></script>
+<script>
+  const { Cart, PRODUCTS, money, find } = MTD;
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  document.getElementById('grid').innerHTML = PRODUCTS.map(p => `
+    <article class="card">
+      <figure><img src="${p.image}" srcset="${p.image800} 800w, ${p.image} 1312w" sizes="(max-width:700px) 90vw, 33vw" alt="${p.alt}"></figure>
+      <h2>${p.name}</h2>
+      <div class="price">${money(p.price)}</div>
+      <p>${p.description}</p>
+      <button class="btn" type="button" data-add="${p.id}">Add to cart</button>
+    </article>`).join('');
+
+  const drawer = document.getElementById('drawer'), scrim = document.getElementById('scrim');
+  const openCart = () => { drawer.classList.add('open'); scrim.classList.add('open'); };
+  const closeCart = () => { drawer.classList.remove('open'); scrim.classList.remove('open'); };
+  document.getElementById('open-cart').onclick = openCart;
+  document.getElementById('close-cart').onclick = closeCart;
+  scrim.onclick = closeCart;
+  addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+
+  function render() {
+    const items = Cart.get();
+    document.getElementById('cart-n').textContent = Cart.count();
+    const body = document.getElementById('cart-body'), ft = document.getElementById('cart-ft');
+    if (!items.length) { body.innerHTML = '<p class="empty">Your cart is empty.</p>'; ft.innerHTML = ''; return; }
+    body.innerHTML = items.map(i => { const p = find(i.id); return `
+      <div class="line-item">
+        <div class="thumb"><img src="${p.image800}" alt=""></div>
+        <div><h3>${p.name}</h3><div class="note">${money(p.price)} each</div>
+          <div class="qty"><button type="button" data-dec="${p.id}" aria-label="Fewer">−</button><span>${i.qty}</span><button type="button" data-inc="${p.id}" aria-label="More">+</button></div></div>
+        <div>${money(p.price * i.qty)}</div>
+      </div>`; }).join('');
+    ft.innerHTML = `
+      <div class="row total"><span>Subtotal</span><span>${money(Cart.subtotal())}</span></div>
+      <p class="note">Delivery is free in Santa Cruz County. Sales tax is calculated at payment.</p>
+      <a class="btn" href="checkout.html">Checkout</a>`;
+  }
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-add],[data-inc],[data-dec]'); if (!t) return;
+    if (t.dataset.add) { Cart.add(t.dataset.add); openCart(); }
+    if (t.dataset.inc) { const i = Cart.get().find(x => x.id === t.dataset.inc); Cart.setQty(t.dataset.inc, Math.min(10, i.qty + 1)); }
+    if (t.dataset.dec) { const i = Cart.get().find(x => x.id === t.dataset.dec); Cart.setQty(t.dataset.dec, i.qty - 1); }
+  });
+  document.addEventListener('cart:change', render);
+  render();
+</script>
+</body>
+</html>

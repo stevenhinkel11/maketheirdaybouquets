@@ -1,0 +1,10 @@
+name = "mtd-checkout"
+main = "worker.js"
+compatibility_date = "2024-10-01"
+
+[vars]
+SQUARE_ENV = "sandbox"                    # change to "production" when you go live
+SQUARE_LOCATION_ID = ""                   # from Square Developer Dashboard → Locations
+SITE_URL = "https://maketheirdaybouquets.com"
+ALLOWED_ORIGINS = "https://maketheirdaybouquets.com,https://www.maketheirdaybouquets.com,https://stevenhinkel11.github.io"
+# SQUARE_ACCESS_TOKEN is a secret: set it with `wrangler secret put SQUARE_ACCESS_TOKEN` (never put it in this file)

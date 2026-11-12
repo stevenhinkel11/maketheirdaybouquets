@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — Make Their Day Bouquets</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shop.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F2W7M2RE34');
+</script>
+</head>
+<body>
+<header>
+  <a class="brand" href="./">Make Their Day Bouquets</a>
+  <div class="nav"><a href="store.html">← Back to shop</a></div>
+</header>
+
+<main>
+  <h1>Checkout</h1>
+  <p class="sub">Tell us where and when to deliver. You'll pay securely with Square on the next step.</p>
+
+  <div id="empty" class="msg">Your cart is empty. <a href="store.html" style="color:var(--marigold-dk)">Browse the shop</a>.</div>
+
+  <div class="co" id="co">
+    <form id="f" novalidate>
+      <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+
+      <fieldset>
+        <legend>Delivery date</legend>
+        <div class="field">
+          <label for="date">When should we deliver? <span class="req">*</span></label>
+          <input type="date" id="date" name="date" required>
+          <p class="hint">Order before 11:00 AM (Pacific) for same-day delivery.</p>
+          <p class="bad-msg" id="date-msg"></p>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Who is receiving the flowers?</legend>
+        <div class="two">
+          <div class="field"><label for="rname">Recipient name <span class="req">*</span></label><input type="text" id="rname" autocomplete="off" required></div>
+          <div class="field"><label for="rphone">Recipient phone <span class="req">*</span></label><input type="tel" id="rphone" autocomplete="off" placeholder="(831) 555-0123" required></div>
+        </div>
+        <div class="field"><label for="addr1">Delivery address <span class="req">*</span></label><input type="text" id="addr1" autocomplete="off" required></div>
+        <div class="field"><label for="addr2">Apt, suite, unit (optional)</label><input type="text" id="addr2" autocomplete="off"></div>
+        <div class="two">
+          <div class="field">
+            <label for="zip">ZIP code <span class="req">*</span></label>
+            <input type="text" id="zip" inputmode="numeric" maxlength="5" autocomplete="off" required>
+          </div>
+          <div class="field"><label for="city">City</label><input type="text" id="city" readonly tabindex="-1" placeholder="Filled in from ZIP"></div>
+        </div>
+        <p id="zip-msg" class="hint">We deliver free anywhere in Santa Cruz County, CA.</p>
+        <div class="field"><label for="instr">Delivery instructions (optional)</label><textarea id="instr" placeholder="Gate code, leave at the door, call on arrival…"></textarea></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Gift message</legend>
+        <div class="field"><label for="msg">Card message (optional)</label><textarea id="msg" maxlength="250" placeholder="Happy birthday! Thinking of you."></textarea></div>
+        <div class="field"><label for="from">Signed from (optional)</label><input type="text" id="from" autocomplete="off"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your details</legend>
+        <div class="field"><label for="cname">Your name <span class="req">*</span></label><input type="text" id="cname" autocomplete="name" required></div>
+        <div class="two">
+          <div class="field"><label for="cemail">Email <span class="req">*</span></label><input type="email" id="cemail" autocomplete="email" required></div>
+          <div class="field"><label for="cphone">Phone <span class="req">*</span></label><input type="tel" id="cphone" autocomplete="tel" required></div>
+        </div>
+      </fieldset>
+
+      <p class="msg err" id="err" role="alert"></p>
+      <button class="btn" id="pay" type="submit" disabled>Continue to payment</button>
+      <p class="note">Your payment is processed securely by Square. We never see your card details.</p>
+    </form>
+
+    <aside class="summary" id="summary"></aside>
+  </div>
+</main>
+
+<footer>
+  <span>© <span id="yr"></span> Make Their Day Bouquets</span>
+  <span><a href="privacy.html">Privacy</a></span>
+</footer>
+
+<script src="js/shop.js"></script>
+<script>
+  const { Cart, money, find, ZIPS, zipCity, dateProblem, earliestDate, latestDate, CHECKOUT_API } = MTD;
+  const $ = id => document.getElementById(id);
+  $('yr').textContent = new Date().getFullYear();
+
+  const items = Cart.get();
+  if (!items.length) { $('co').style.display = 'none'; $('empty').classList.add('show'); }
+
+  $('summary').innerHTML = `
+    <h2>Your order</h2>
+    ${items.map(i => { const p = find(i.id); return `<div class="row"><span>${p.name} × ${i.qty}</span><span>${money(p.price * i.qty)}</span></div>`; }).join('')}
+    <hr>
+    <div class="row"><span>Subtotal</span><span>${money(Cart.subtotal())}</span></div>
+    <div class="row"><span>Delivery</span><span>Free</span></div>
+    <div class="row"><span>Sales tax</span><span>Calculated at payment</span></div>
+    <hr>
+    <p class="note"><a href="store.html" style="color:var(--marigold-dk)">Edit cart</a></p>`;
+
+  const dateEl = $('date');
+  dateEl.min = earliestDate(); dateEl.max = latestDate();
+
+  const zipEl = $('zip'), zipMsg = $('zip-msg');
+  function checkZip() {
+    const z = zipEl.value.trim();
+    $('city').value = zipCity(z);
+    zipEl.classList.remove('bad'); zipMsg.className = 'hint';
+    if (z.length < 5) { zipMsg.textContent = 'We deliver free anywhere in Santa Cruz County, CA.'; return false; }
+    if (zipCity(z)) { zipMsg.className = 'ok'; zipMsg.textContent = '✓ We deliver to ' + zipCity(z) + ' (' + z + ').'; return true; }
+    zipEl.classList.add('bad'); zipMsg.className = 'bad-msg';
+    zipMsg.textContent = 'Sorry, ' + z + ' is outside our Santa Cruz County delivery area. We deliver to: ' + [...new Set(Object.values(ZIPS))].join(', ') + '.';
+    return false;
+  }
+  function checkDate() { const p = dateProblem(dateEl.value); $('date-msg').textContent = dateEl.value ? p : ''; return !p; }
+
+  const reqIds = ['rname', 'rphone', 'addr1', 'cname', 'cemail', 'cphone'];
+  const phoneOk = v => v.replace(/\D/g, '').replace(/^1/, '').length === 10;
+  function allOk() {
+    const filled = reqIds.every(id => $(id).value.trim());
+    return filled && checkZip() && checkDate() && phoneOk($('rphone').value) && phoneOk($('cphone').value) && /^\S+@\S+\.\S+$/.test($('cemail').value.trim()) && Cart.get().length > 0;
+  }
+  const refresh = () => { $('pay').disabled = !allOk(); };
+  $('f').addEventListener('input', refresh); $('f').addEventListener('change', refresh);
+  zipEl.addEventListener('input', () => { zipEl.value = zipEl.value.replace(/\D/g, '').slice(0, 5); refresh(); });
+  refresh();
+
+  $('f').addEventListener('submit', async e => {
+    e.preventDefault();
+    const err = $('err'); err.classList.remove('show');
+    if (!allOk()) { err.textContent = 'Please complete the required fields. Delivery must be to a Santa Cruz County ZIP code and a valid date.'; err.classList.add('show'); return; }
+    if ($('f').website.value) return;
+    if (!CHECKOUT_API) { err.textContent = "Online checkout isn't connected yet. Please use the Order Flowers form for now."; err.classList.add('show'); return; }
+    const pay = $('pay'); pay.disabled = true; pay.textContent = 'Please wait…';
+    const body = {
+      items: Cart.get(),
+      deliveryDate: dateEl.value,
+      recipient: { name: $('rname').value.trim(), phone: $('rphone').value.trim(), address1: $('addr1').value.trim(), address2: $('addr2').value.trim(), zip: zipEl.value.trim() },
+      instructions: $('instr').value.trim(), giftMessage: $('msg').value.trim(), giftFrom: $('from').value.trim(),
+      customer: { name: $('cname').value.trim(), email: $('cemail').value.trim(), phone: $('cphone').value.trim() }
+    };
+    try {
+      const r = await fetch(CHECKOUT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.url) throw new Error(j.error || 'Something went wrong. Please try again.');
+      location.href = j.url;
+    } catch (ex) {
+      err.textContent = ex.message; err.classList.add('show');
+      pay.disabled = false; pay.textContent = 'Continue to payment'; refresh();
+    }
+  });
+</script>
+</body>
+</html>
