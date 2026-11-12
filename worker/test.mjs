@@ -7,7 +7,7 @@ const t = (name, cond) => { out((cond ? 'PASS ' : 'FAIL ') + name); if (!cond) f
 // 10:00 AM PDT on Fri 2026-11-13? (Nov is PST) -> use 10:00 PST = 18:00Z ; 2026-11-13 is a Friday
 const before = new Date('2026-11-13T18:00:00Z');   // 10:00 AM PST
 const after  = new Date('2026-11-13T20:30:00Z');   // 12:30 PM PST
-const base = d => ({ items: [{ id: 'luxury-bouquet', qty: 1 }], deliveryDate: d,
+const base = d => ({ items: [{ id: 'signature-arrangement', qty: 1 }], deliveryDate: d,
   recipient: { name: 'Pat', phone: '(831) 555-0123', address1: '1 Main St', address2: '', zip: '95060' },
   customer: { name: 'Sam', email: 'sam@example.com', phone: '831-555-0100' }, instructions: '', giftMessage: 'Hi', giftFrom: 'Sam' });
 
@@ -26,7 +26,7 @@ zips.forEach(z => { const b = base('2026-11-14'); b.recipient.zip = z; t('zip ok
 { const b = base('2026-11-14'); b.recipient.zip = '95060-1234'; t('zip+4 normalizes to 95060', validateOrder(b, before).order.recipient.zip === '95060'); }
 { const b = base('2026-11-14'); b.recipient.zip = '95060'; t('city filled from zip', validateOrder(b, before).order.recipient.city === 'Santa Cruz'); }
 { const b = base('2026-11-14'); b.items = [{ id: 'hacked', qty: 1 }]; t('unknown product rejected', !!validateOrder(b, before).error); }
-{ const b = base('2026-11-14'); b.items = [{ id: 'luxury-bouquet', qty: 99 }]; t('qty 99 rejected', !!validateOrder(b, before).error); }
+{ const b = base('2026-11-14'); b.items = [{ id: 'signature-arrangement', qty: 99 }]; t('qty 99 rejected', !!validateOrder(b, before).error); }
 { const b = base('2026-11-14'); b.items = []; t('empty cart rejected', !!validateOrder(b, before).error); }
 { const b = base('2026-11-14'); b.items[0].price = 1; t('client price ignored', !validateOrder(b, before).error && validateOrder(b, before).order.items[0].price === undefined); }
 { const b = base('2026-11-14'); b.customer.email = 'nope'; t('bad email rejected', !!validateOrder(b, before).error); }
@@ -55,7 +55,7 @@ const pl = calls.find(c => c.url.includes('payment-links')).body;
 t('payment link url returned', res.url === 'https://square.link/test');
 t('embed (long) url returned', res.embedUrl === 'https://checkout.square.site/merchant/M/checkout/X');
 t('uses sandbox host', calls[0].url.startsWith('https://connect.squareupsandbox.com'));
-t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Luxury Bouquet (deliver Sat, Nov 14 to 1 Main St, Santa Cruz)');
+t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Signature Arrangement (deliver Sat, Nov 14 to 1 Main St, Santa Cruz)');
 t('square tax attached', pl.order.taxes && pl.order.taxes[0].catalog_object_id === 'TAXID');
 t('default fulfillment is a shipment to the recipient', pl.order.fulfillments[0].type === 'SHIPMENT' && pl.order.fulfillments[0].shipment_details.recipient.display_name === 'Pat');
 t('due time has PT offset', pl.order.fulfillments[0].shipment_details.expected_shipped_at === '2026-11-14T12:00:00-08:00');
@@ -107,7 +107,7 @@ for (const m of ['shipment', 'none']) {
 }
 // ---- the owner's new-order email ----
 {
-  const order = { id: 'ORD123', line_items: [{ name: 'Luxury Bouquet', quantity: '1', gross_sales_money: { amount: 10000 }, total_money: { amount: 10000 } }],
+  const order = { id: 'ORD123', line_items: [{ name: 'Signature Arrangement', quantity: '1', gross_sales_money: { amount: 10000 }, total_money: { amount: 10000 } }],
     total_tax_money: { amount: 950 }, total_money: { amount: 10950 },
     metadata: { delivery_date: '2026-11-14', recipient_name: 'Pat <b>Jones</b>', recipient_phone: '+18315550123', address: '1 Main St, Apt 2, Santa Cruz, CA 95060',
       gift_message: 'Happy birthday & many more!', gift_from: 'Sam', delivery_notes: 'Gate code 1234', buyer_name: 'Sam Lee', buyer_phone: '+18315550100', buyer_email: 'sam@example.com' } };
@@ -121,7 +121,7 @@ for (const m of ['shipment', 'none']) {
   const min = buildEmail({ id: 'X', line_items: [], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null);
   t('email builds with minimal data (no crash)', /Total paid: \$1\.00/.test(min.text));
   const ce = buildCustomerEmail(order, null);
-  t('emails strip the delivery suffix from item names', buildEmail({ id: 'X', line_items: [{ name: 'Luxury Bouquet (deliver Sat, Nov 14 to 1 Main St, Santa Cruz)', quantity: '1', total_money: { amount: 100 } }], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).text.includes('Luxury Bouquet x 1') && !/deliver Sat/.test(buildEmail({ id: 'X', line_items: [{ name: 'Luxury Bouquet (deliver Sat, Nov 14 to 1 Main St, Santa Cruz)', quantity: '1', total_money: { amount: 100 } }], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).html.replace(/Sat, Nov 14<\/title>/g,'').split('Order')[1] || ''));
+  t('emails strip the delivery suffix from item names', buildEmail({ id: 'X', line_items: [{ name: 'Signature Arrangement (deliver Sat, Nov 14 to 1 Main St, Santa Cruz)', quantity: '1', total_money: { amount: 100 } }], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).text.includes('Signature Arrangement x 1') && !/deliver Sat/.test(buildEmail({ id: 'X', line_items: [{ name: 'Signature Arrangement (deliver Sat, Nov 14 to 1 Main St, Santa Cruz)', quantity: '1', total_money: { amount: 100 } }], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).html.replace(/Sat, Nov 14<\/title>/g,'').split('Order')[1] || ''));
   t('customer subject has date', /^Your order is confirmed · delivery Sat, Nov 14/.test(ce.subject));
   t('customer email greets by first name', /Thank you, Sam!/.test(ce.html) && /Thank you, Sam!/.test(ce.text));
   t('customer email has delivery, message and total', /1 Main St, Apt 2/.test(ce.html) && /Happy birthday &amp; many more!/.test(ce.html) && /\$109\.50/.test(ce.html) && /Delivery<\/td><td[^>]*>Free/.test(ce.html));

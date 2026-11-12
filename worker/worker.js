@@ -10,11 +10,11 @@
  */
 
 const PRODUCTS = {
-  "luxury-bouquet": {
-    name: "Luxury Bouquet",
-    price: 10000                  // cents. Products live on the website; you do NOT need to create them in Square.
-    // Optional: add  squareName: "Item name in Square"  to use an existing Square catalog item instead.
-  },
+  // Prices in cents. Products live on the website; you do NOT need to create them in Square.
+  // Optional: add  squareName: "Item name in Square"  to use an existing Square catalog item instead.
+  "petite-bouquet":       { name: "Petite Bouquet",       price: 5500 },
+  "signature-arrangement": { name: "Signature Arrangement", price: 10000 },
+  "deluxe-arrangement":   { name: "Deluxe Arrangement",   price: 15000 },   // listed as "$150+" on the site
   "test-bouquet": { name: "Test Bouquet ($1 test)", price: 100 }   // TEMPORARY: live end-to-end test, remove afterwards
 };
 

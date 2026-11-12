@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/shop.css?v=6">
+<link rel="stylesheet" href="css/shop.css?v=7">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
 <script>
@@ -25,14 +25,14 @@
 <body>
 <header>
   <a class="brand" href="./">Make Their Day Bouquets</a>
-  <div class="nav"><a href="store.html">← Back to shop</a></div>
+  <div class="nav"><a href="./">← Back to shop</a></div>
 </header>
 
 <main>
   <h1>Checkout</h1>
   <p class="sub">Tell us where and when to deliver. You'll pay securely with Square on the next step.</p>
 
-  <div id="empty" class="msg">Your cart is empty. <a href="store.html" style="color:var(--marigold-dk)">Browse the shop</a>.</div>
+  <div id="empty" class="msg">Your cart is empty. <a href="./#shop" style="color:var(--marigold-dk)">Browse our arrangements</a>.</div>
 
   <div class="co" id="co">
     <form id="f" novalidate>
@@ -102,7 +102,7 @@
   <iframe id="pay-frame" title="Square secure checkout" allow="payment"></iframe>
 </dialog>
 
-<script src="js/shop.js?v=6"></script>
+<script src="js/shop.js?v=7"></script>
 <script>
   const { Cart, money, find, ZIPS, zipCity, dateProblem, earliestDate, latestDate, CHECKOUT_API } = MTD;
   const $ = id => document.getElementById(id);
@@ -119,7 +119,7 @@
     <div class="row"><span>Delivery</span><span>Free</span></div>
     <div class="row"><span>Sales tax</span><span>Calculated at payment</span></div>
     <hr>
-    <p class="note"><a href="store.html" style="color:var(--marigold-dk)">Edit cart</a></p>`;
+    <p class="note"><a href="./#cart" style="color:var(--marigold-dk)">Edit cart</a></p>`;
 
   const dateEl = $('date');
   dateEl.min = earliestDate(); dateEl.max = latestDate();

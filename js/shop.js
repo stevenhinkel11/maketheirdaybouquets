@@ -6,16 +6,21 @@
 
   const PRODUCTS = [
     {
-      id: "luxury-bouquet",
-      name: "Luxury Bouquet",
-      price: 10000, // cents
-      description: "An extravagant arrangement bursting with color and texture. Perfect for celebrations and gifts!",
-      image: "assets/img/pink-bowl.jpg",
-      image800: "assets/img/800/pink-bowl.jpg",
-      alt: "Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"
-    }
-    ,
-    { // TEMPORARY hidden $1 product for a live end-to-end test. Not shown in the shop; add via store.html?add=test-bouquet
+      id: "petite-bouquet", name: "Petite Bouquet", price: 5500, // cents
+      description: "A sweet, thoughtfully arranged bouquet, hand-wrapped and finished with a ribbon.",
+      image: "assets/img/wildflower-deck.jpg", image800: "assets/img/800/wildflower-deck.jpg", alt: "Hand-wrapped bouquet with a ribbon"
+    },
+    {
+      id: "signature-arrangement", name: "Signature Arrangement", price: 10000,
+      description: "A full, lush floral arrangement, beautifully designed in a vase or container.",
+      image: "assets/img/pink-bowl.jpg", image800: "assets/img/800/pink-bowl.jpg", alt: "Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"
+    },
+    {
+      id: "deluxe-arrangement", name: "Deluxe Arrangement", price: 15000, priceNote: "starting at",
+      description: "Our most abundant, showstopping floral designs, artfully arranged in a vase or container.",
+      image: "assets/img/lavender-magenta.jpg", image800: "assets/img/800/lavender-magenta.jpg", alt: "Lavender roses, magenta blooms and white daisies in a glass vase"
+    },
+    { // TEMPORARY hidden $1 product for a live end-to-end test. Not shown on the site.
       id: "test-bouquet", name: "Test Bouquet ($1 test)", price: 100, hidden: true,
       description: "Live checkout test.", image: "assets/img/pink-bowl.jpg", image800: "assets/img/800/pink-bowl.jpg", alt: ""
     }
