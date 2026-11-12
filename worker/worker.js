@@ -159,7 +159,7 @@ export async function createPaymentLink(env, o) {
     // Custom line items don't carry tax by themselves: attach the sales tax already set up in her Square account.
     const taxId = await salesTaxId(env);
     if (taxId) order.taxes = [{ uid: "sales-tax", catalog_object_id: taxId, scope: "ORDER" }];
-    else if (env.REQUIRE_TAX !== "false") { console.log("No sales tax found in Square"); throw new Error("no-tax"); }
+    else if (env.REQUIRE_TAX !== "false") { console.log("No sales tax found in Square"); const e = new Error("no-tax"); e.detail = "No sales tax found in this Square account. Create one in the Dashboard under Account & Settings → Sales taxes (or Items → Taxes)."; throw e; }
   }
   const { ok, j } = await sq(env, "/v2/online-checkout/payment-links", {
     idempotency_key: crypto.randomUUID(),
@@ -167,7 +167,10 @@ export async function createPaymentLink(env, o) {
     checkout_options: { redirect_url: (env.SITE_URL || "https://maketheirdaybouquets.com") + "/order-complete.html", ask_for_shipping_address: false, allow_tipping: false },
     pre_populated_data: { buyer_email: o.customer.email, buyer_phone_number: o.customer.phone }
   });
-  if (!ok || !j.payment_link) { console.log("Square error", JSON.stringify(j)); throw new Error("square"); }
+  if (!ok || !j.payment_link) {
+    console.log("Square error", JSON.stringify(j));
+    const e = new Error("square"); e.detail = (j.errors || []).map(x => [x.category, x.code, x.field, x.detail].filter(Boolean).join(" · ")).join(" | ") || "no details"; throw e;
+  }
   return { url: j.payment_link.url, usedCatalog: useCatalog };
 }
 
@@ -189,6 +192,6 @@ export default {
     let body; try { body = await req.json(); } catch (_) { return json({ error: "Invalid request." }, 400, h); }
     const v = validateOrder(body); if (v.error) return json({ error: v.error }, 400, h);
     try { const { url } = await createPaymentLink(env, v.order); return json({ url }, 200, h); }
-    catch (_) { return json({ error: "We couldn't start checkout right now. Please try again, or contact us." }, 502, h); }
+    catch (e) { return json({ error: "We couldn't start checkout right now. Please try again, or contact us.", detail: env.SQUARE_ENV === "sandbox" ? (e.detail || String(e.message || e)) : undefined }, 502, h); }
   }
 };

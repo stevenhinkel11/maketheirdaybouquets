@@ -159,7 +159,7 @@
     try {
       const r = await fetch(CHECKOUT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({}));
-      if (!r.ok || !j.url) throw new Error(j.error || 'Something went wrong. Please try again.');
+      if (!r.ok || !j.url) throw new Error((j.error || 'Something went wrong. Please try again.') + (j.detail ? ' [Test mode detail: ' + j.detail + ']' : ''));
       location.href = j.url;
     } catch (ex) {
       err.textContent = ex.message; err.classList.add('show');
