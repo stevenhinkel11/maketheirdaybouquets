@@ -174,14 +174,19 @@ export async function createPaymentLink(env, o) {
     if (taxId) order.taxes = [{ uid: "sales-tax", catalog_object_id: taxId, scope: "ORDER" }];
     else if (env.REQUIRE_TAX !== "false") { console.log("No sales tax found in Square"); const e = new Error("no-tax"); e.detail = "No sales tax found in this Square account. Create one in the Dashboard under Account & Settings → Sales taxes (or Items → Taxes)."; throw e; }
   }
-  const { ok, j } = await sq(env, "/v2/online-checkout/payment-links", {
+  const linkBody = {
     idempotency_key: crypto.randomUUID(),
     order,
-    // Square rejects pre_populated_data.buyer_email together with a fulfillment, and the delivery recipient may be
-    // someone else, so we send NO email to Square here: Square's checkout asks the buyer for their own email
-    // (for the receipt). The buyer's name/phone/email are recorded in the delivery note instead.
     checkout_options: { redirect_url: (env.SITE_URL || "https://maketheirdaybouquets.com") + "/order-complete.html", ask_for_shipping_address: false, allow_tipping: false }
-  });
+  };
+  // Pre-fill the buyer's email so Square doesn't ask for it again. Square once rejected buyer_email together with a
+  // fulfillment, so if it reports CONFLICTING_PARAMETERS we retry without it (the buyer then types it on Square's page).
+  let res = await sq(env, "/v2/online-checkout/payment-links", { ...linkBody, pre_populated_data: { buyer_email: o.customer.email } });
+  if (!res.ok && JSON.stringify(res.j).includes("CONFLICTING_PARAMETERS")) {
+    console.log("buyer_email conflicts with fulfillment; retrying without it");
+    res = await sq(env, "/v2/online-checkout/payment-links", { ...linkBody, idempotency_key: crypto.randomUUID() });
+  }
+  const { ok, j } = res;
   if (!ok || !j.payment_link) {
     console.log("Square error", JSON.stringify(j));
     const e = new Error("square"); e.detail = (j.errors || []).map(x => [x.category, x.code, x.field, x.detail].filter(Boolean).join(" · ")).join(" | ") || "no details"; throw e;
@@ -314,16 +319,21 @@ export async function handleWebhook(req, env) {
   const p = ev && ev.data && ev.data.object && ev.data.object.payment;
   // Only completed, non-refunded payments
   if (!String(ev.type || "").startsWith("payment.") || !p || p.status !== "COMPLETED" || !p.order_id || (p.refunded_money && p.refunded_money.amount > 0)) return new Response("ignored", { status: 200 });
-  if (emailed.has(p.id) || (env.ORDERS_KV && await env.ORDERS_KV.get("sent:" + p.id))) return new Response("duplicate", { status: 200 });
+  // Claim this payment BEFORE any async work, so notifications that arrive at the same moment can't all send an email.
+  if (emailed.has(p.id)) return new Response("duplicate", { status: 200 });
+  emailed.add(p.id);
+  if (env.ORDERS_KV && await env.ORDERS_KV.get("sent:" + p.id)) return new Response("duplicate", { status: 200 });
   const { ok, j } = await sqGet(env, "/v2/orders/" + encodeURIComponent(p.order_id));
-  if (!ok || !j.order) { console.log("order fetch failed", JSON.stringify(j)); return new Response("order fetch failed", { status: 500 }); }
+  if (!ok || !j.order) { emailed.delete(p.id); console.log("order fetch failed", JSON.stringify(j)); return new Response("order fetch failed", { status: 500 }); }
   if (!(j.order.metadata && j.order.metadata.delivery_date)) return new Response("not a website order", { status: 200 });
   const { subject, html, text } = buildEmail(j.order, p);
-  if (!env.RESEND_API_KEY || !env.NOTIFY_TO) { console.log("email not configured"); return new Response("email not configured", { status: 500 }); }
-  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+  if (!env.RESEND_API_KEY || !env.NOTIFY_TO) { emailed.delete(p.id); console.log("email not configured"); return new Response("email not configured", { status: 500 }); }
+  // Square sends payment.updated several times per payment (and Cloudflare may run several instances at once), so every
+  // email carries an idempotency key tied to the payment: Resend ignores repeats of the same key.
+  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json", "Idempotency-Key": "owner-" + p.id },
     body: JSON.stringify({ from: env.NOTIFY_FROM || "Make Their Day Orders <onboarding@resend.dev>", to: env.NOTIFY_TO.split(",").map(s => s.trim()), subject, html, text, reply_to: (j.order.metadata.buyer_email || undefined) }) });
-  if (!r.ok) { console.log("resend failed", r.status, await r.text()); return new Response("email failed", { status: 500 }); }
-  emailed.add(p.id); if (env.ORDERS_KV) await env.ORDERS_KV.put("sent:" + p.id, "1", { expirationTtl: 60 * 60 * 24 * 14 });
+  if (!r.ok) { emailed.delete(p.id); console.log("resend failed", r.status, await r.text()); return new Response("email failed", { status: 500 }); }
+  if (env.ORDERS_KV) await env.ORDERS_KV.put("sent:" + p.id, "1", { expirationTtl: 60 * 60 * 24 * 14 });
 
   // Customer confirmation (needs a verified sending domain: set CUSTOMER_FROM, e.g. "Make Their Day Bouquets <orders@maketheirdaybouquets.com>").
   // A failure here never blocks the owner email, which has already been sent.
@@ -331,7 +341,7 @@ export async function handleWebhook(req, env) {
   if (env.CUSTOMER_FROM && buyer) {
     try {
       const c = buildCustomerEmail(j.order, p);
-      const cr = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+      const cr = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json", "Idempotency-Key": "customer-" + p.id },
         body: JSON.stringify({ from: env.CUSTOMER_FROM, to: [buyer], subject: c.subject, html: c.html, text: c.text, reply_to: env.NOTIFY_TO.split(",")[0].trim() }) });
       if (!cr.ok) console.log("customer email failed", cr.status, await cr.text());
     } catch (e) { console.log("customer email error", String(e)); }

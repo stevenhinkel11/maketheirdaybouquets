@@ -1,4 +1,5 @@
 import { validateOrder, earliestDate, dateProblem, buildNote, normalizePhone, createPaymentLink, buildEmail, buildCustomerEmail } from './worker.js';
+if (typeof console === 'undefined') globalThis.console = { log() {} };
 const out = typeof print === 'function' ? print : console.log;
 let fail = 0;
 const t = (name, cond) => { out((cond ? 'PASS ' : 'FAIL ') + name); if (!cond) fail++; };
@@ -61,7 +62,7 @@ t('due time has PT offset', pl.order.fulfillments[0].shipment_details.expected_s
 t('address in CA with zip', pl.order.fulfillments[0].shipment_details.recipient.address.postal_code === '95060' && pl.order.fulfillments[0].shipment_details.recipient.address.administrative_district_level_1 === 'CA');
 t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].shipment_details.shipping_note));
 t('location set', pl.order.location_id === 'LOC1');
-t('no buyer_email alongside fulfillment (Square rejects it)', !pl.pre_populated_data);
+t('buyer email is pre-filled so Square does not ask again', pl.pre_populated_data && pl.pre_populated_data.buyer_email === 'sam@example.com');
 t('buyer email NOT sent as recipient email', pl.order.fulfillments[0].shipment_details.recipient.email_address === undefined);
 t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@example.com/.test(pl.order.fulfillments[0].shipment_details.shipping_note));
 // optional fields empty -> no empty metadata values (Square rejects them)
@@ -72,6 +73,22 @@ t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@examp
   const md = calls.find(c => c.url.includes('payment-links')).body.order.metadata;
   t('no empty metadata values when optional fields are blank', Object.values(md).every(v => String(v).length > 0));
   t('gift message optional (order validates without it)', !validateOrder(b, before).error);
+}
+// fallback: if Square rejects buyer_email with a conflict, retry without it
+{
+  calls.length = 0;
+  let n = 0;
+  globalThis.fetch = async (url, init) => {
+    const body = JSON.parse(init.body); calls.push({ url, body });
+    if (url.endsWith('/v2/catalog/search')) return { ok: true, json: async () => ({ objects: [{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusion_type: 'ADDITIVE' } }] }) };
+    n++;
+    if (body.pre_populated_data) return { ok: false, json: async () => ({ errors: [{ category: 'INVALID_REQUEST_ERROR', code: 'CONFLICTING_PARAMETERS' }] }) };
+    return { ok: true, json: async () => ({ payment_link: { url: 'https://square.link/ok', long_url: 'https://checkout.square.site/x' } }) };
+  };
+  const r2 = await createPaymentLink(env, good);
+  const links = calls.filter(c => c.url.includes('payment-links'));
+  t('retries without buyer_email after CONFLICTING_PARAMETERS', links.length === 2 && !links[1].body.pre_populated_data && r2.url === 'https://square.link/ok');
+  t('retry uses a fresh idempotency key', links[0].body.idempotency_key !== undefined);
 }
 // fulfillment modes
 for (const m of ['shipment', 'none']) {
