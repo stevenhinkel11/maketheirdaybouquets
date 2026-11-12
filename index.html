@@ -298,15 +298,17 @@
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
   document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 
-  // Square checkout modal. Paste the Square payment link / buy-button / store URL below.
-  // While this is empty, the "Order Now" buttons stay hidden.
-  const SQUARE_URL = "";
+  // Square checkout modal. SQUARE_URL is the Square Buy Button short link (used for "Open in new tab").
+  // SQUARE_EMBED_URL is the page that short link redirects to, which loads reliably inside the modal.
+  // While SQUARE_URL is empty, the "Order Now" buttons stay hidden.
+  const SQUARE_URL = "https://square.link/u/9JhhDYUn?src=embed";
+  const SQUARE_EMBED_URL = "https://checkout.square.site/merchant/MLDV6WRARMF8R/checkout/FLDPBYFYL2B7AZFMFPXPQVS4?src=embed";
   (function(){
     const btns = document.querySelectorAll('[data-square]');
     if (!SQUARE_URL) return;
     const dlg = document.getElementById('square-modal'), frame = document.getElementById('sq-frame');
     document.getElementById('sq-new').href = SQUARE_URL;
-    btns.forEach(b => { b.style.display = ''; b.onclick = () => { if (!frame.src) frame.src = SQUARE_URL; dlg.showModal(); }; });
+    btns.forEach(b => { b.style.display = ''; b.onclick = () => { if (!frame.getAttribute('src')) frame.src = SQUARE_EMBED_URL || SQUARE_URL; dlg.showModal(); }; });
     document.getElementById('sq-close').onclick = () => dlg.close();
     dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
   })();
