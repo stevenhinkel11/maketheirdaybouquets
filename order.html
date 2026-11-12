@@ -66,7 +66,7 @@
 
 <main>
   <h1>Order Flowers</h1>
-  <p class="sub">Tell me about your occasion and I'll be in touch to make it beautiful.</p>
+  <p class="sub">Tell me about your occasion and I'll be in touch to make it beautiful. We deliver anywhere between Boulder Creek and Aptos. Need delivery somewhere else, like Watsonville? Just mention it below or email <a class="inl" href="mailto:maketheirdaybouquets@gmail.com">maketheirdaybouquets@gmail.com</a>.</p>
 
   <div class="msg" id="done" role="status" tabindex="-1">
     <h2>Thank you!</h2>
@@ -89,10 +89,11 @@
     <fieldset class="field">
       <legend>What are you ordering? <span class="req">*</span></legend>
       <div class="opts">
-        <label class="opt"><input type="radio" name="ordering" value="Hand-wrapped bouquet" required> Hand-wrapped bouquet</label>
+        <label class="opt"><input type="radio" name="ordering" value="Custom order" required> Custom order</label>
+        <label class="opt"><input type="radio" name="ordering" value="Hand-wrapped bouquet"> Hand-wrapped bouquet</label>
         <label class="opt"><input type="radio" name="ordering" value="Vase arrangement"> Vase arrangement</label>
         <label class="opt"><input type="radio" name="ordering" value="Large arrangement or event flowers"> Large arrangement or event flowers</label>
-        <label class="opt"><input type="radio" name="ordering" value="Pumpkin arrangement"> Pumpkin arrangement</label>
+        <label class="opt"><input type="radio" name="ordering" value="Pumpkin arrangement"> Custom pumpkin arrangement</label>
         <label class="opt"><input type="radio" name="ordering" value="Flower subscription"> Flower subscription (weekly, every other week, or monthly)</label>
       </div>
     </fieldset>
@@ -130,10 +131,10 @@
   const EMAIL = "maketheirdaybouquets@gmail.com";
 
   document.getElementById('yr').textContent = new Date().getFullYear();
-  if (new URLSearchParams(location.search).get('type') === 'pumpkin') {
-    document.querySelector('input[value="Pumpkin arrangement"]').checked = true;
-    document.querySelector('h1').textContent = 'Order Pumpkin Arrangements';
-    document.title = 'Order Pumpkin Arrangements — Make Their Day Bouquets';
+  if (['custom', 'pumpkin'].includes(new URLSearchParams(location.search).get('type'))) {
+    document.querySelector('input[value="' + (new URLSearchParams(location.search).get('type') === 'pumpkin' ? 'Pumpkin arrangement' : 'Custom order') + '"]').checked = true;
+    document.querySelector('h1').textContent = 'Custom Orders';
+    document.title = 'Custom Orders — Make Their Day Bouquets';
   }
   if (new URLSearchParams(location.search).get('type') === 'subscription') {
     document.querySelector('input[value="Flower subscription"]').checked = true;

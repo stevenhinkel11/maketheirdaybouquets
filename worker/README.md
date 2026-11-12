@@ -48,7 +48,7 @@ Push to GitHub. Test with Square's sandbox test card (4111 1111 1111 1111, any f
 3. Place one real $100 order yourself and refund it from Square.
 
 ## Rules enforced server-side (worker.js)
-- **Delivery area:** ZIP must be one of the 21 Santa Cruz County ZIP codes in `ZIPS`. Anything else is rejected.
+- **Delivery area:** ZIP must be one of the ZIP codes in `ZIPS` (everywhere between Boulder Creek and Aptos; Watsonville is excluded). Anything else is rejected with a message asking the customer to email us.
 - **Delivery date:** same-day only if ordered before 11:00 AM Pacific; otherwise earliest is tomorrow; max 120 days
   out; optional closed dates / delivery weekdays in `RULES`.
 - **Prices:** come from `PRODUCTS` / the Square catalog, never from the browser.
@@ -60,8 +60,8 @@ Add the product in **two** places: `PRODUCTS` in `js/shop.js` (what the shop dis
 `worker.js` to link it to an existing Square catalog item.) After editing `worker.js`, redeploy it.
 
 ## ZIP list source
-From zip-codes.com's Santa Cruz County page (21 ZIPs). Notes:
-- **95076 (Watsonville)** is mostly Santa Cruz County but also touches Monterey/Santa Clara. Included.
+From zip-codes.com's Santa Cruz County page, minus Watsonville (19 ZIPs). Notes:
+- **95076 and 95077 (Watsonville)** are deliberately excluded. Customers outside the area are asked to email.
 - **95033 (Los Gatos mountains)** partly touches Santa Cruz County. Not included. Add it to both `ZIPS` maps if wanted.
 - Some included ZIPs are PO-Box-style (95001, 95007, 95041, 95061, 95063, 95067, 95077); they're harmless to allow.
 - Check anything doubtful with the USPS ZIP lookup: https://tools.usps.com/zip-code-lookup.htm

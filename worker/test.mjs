@@ -20,9 +20,9 @@ t('past date rejected', !!validateOrder(base('2026-11-12'), before).error);
 t('too far ahead rejected', !!validateOrder(base('2027-12-01'), before).error);
 t('garbage date rejected', !!validateOrder(base('banana'), before).error);
 
-const zips = ['95001','95003','95005','95006','95007','95010','95017','95018','95019','95041','95060','95061','95062','95063','95064','95065','95066','95067','95073','95076','95077'];
+const zips = ['95001','95003','95005','95006','95007','95010','95017','95018','95019','95041','95060','95061','95062','95063','95064','95065','95066','95067','95073'];
 zips.forEach(z => { const b = base('2026-11-14'); b.recipient.zip = z; t('zip ok ' + z, !validateOrder(b, before).error); });
-['94019','95033','95112','93905','94110','00000','','9506','95060-1234x'].forEach(z => { const b = base('2026-11-14'); b.recipient.zip = z; const r = validateOrder(b, before); t('zip rejected "' + z + '"', z === '95060-1234x' ? !r.error : !!r.error); });
+['95076','95077','94019','95033','95112','93905','94110','00000','','9506','95060-1234x'].forEach(z => { const b = base('2026-11-14'); b.recipient.zip = z; const r = validateOrder(b, before); t('zip rejected "' + z + '"', z === '95060-1234x' ? !r.error : !!r.error); });
 { const b = base('2026-11-14'); b.recipient.zip = '95060-1234'; t('zip+4 normalizes to 95060', validateOrder(b, before).order.recipient.zip === '95060'); }
 { const b = base('2026-11-14'); b.recipient.zip = '95060'; t('city filled from zip', validateOrder(b, before).order.recipient.city === 'Santa Cruz'); }
 { const b = base('2026-11-14'); b.items = [{ id: 'hacked', qty: 1 }]; t('unknown product rejected', !!validateOrder(b, before).error); }

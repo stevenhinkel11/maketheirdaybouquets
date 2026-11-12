@@ -63,7 +63,7 @@
           </div>
           <div class="field"><label for="city">City</label><input type="text" id="city" readonly tabindex="-1" placeholder="Filled in from ZIP"></div>
         </div>
-        <p id="zip-msg" class="hint">We deliver free anywhere in Santa Cruz County, CA.</p>
+        <p id="zip-msg" class="hint">We deliver free anywhere between Boulder Creek and Aptos.</p>
         <div class="field"><label for="instr">Delivery instructions (optional)</label><textarea id="instr" placeholder="Gate code, leave at the door, call on arrival…"></textarea></div>
       </fieldset>
 
@@ -130,10 +130,10 @@
     const z = zip5();
     $('city').value = zipCity(z);
     zipEl.classList.remove('bad'); zipMsg.className = 'hint';
-    if (z.length < 5) { zipMsg.textContent = 'We deliver free anywhere in Santa Cruz County, CA.'; return false; }
+    if (z.length < 5) { zipMsg.textContent = 'We deliver free anywhere between Boulder Creek and Aptos.'; return false; }
     if (zipCity(z)) { zipMsg.className = 'ok'; zipMsg.textContent = '✓ We deliver to ' + zipCity(z) + ' (' + z + ').'; return true; }
     zipEl.classList.add('bad'); zipMsg.className = 'bad-msg';
-    zipMsg.textContent = 'Sorry, ' + z + ' is outside our Santa Cruz County delivery area. We deliver to: ' + [...new Set(Object.values(ZIPS))].join(', ') + '.';
+    zipMsg.innerHTML = 'Sorry, we can\'t take online orders for ' + z + '. We deliver anywhere between Boulder Creek and Aptos. For deliveries to Watsonville or other areas, please email <a href="mailto:maketheirdaybouquets@gmail.com" style="color:inherit">maketheirdaybouquets@gmail.com</a> and we\'ll see what we can do.';
     return false;
   }
   function checkDate() { const p = dateProblem(dateEl.value); $('date-msg').textContent = dateEl.value ? p : ''; return !p; }
@@ -147,7 +147,7 @@
     if (!phoneOk($('rphone').value)) out.push({ id: 'rphone', msg: "Enter a 10-digit phone number for the recipient." });
     if (!v('addr1')) out.push({ id: 'addr1', msg: 'Enter the delivery address.' });
     if (!zip5()) out.push({ id: 'zip', msg: 'Enter the delivery ZIP code.' });
-    else if (!zipCity(zip5())) out.push({ id: 'zip', msg: 'Sorry, ' + zip5() + ' is outside our Santa Cruz County delivery area.' });
+    else if (!zipCity(zip5())) out.push({ id: 'zip', msg: 'Sorry, ' + zip5() + ' is outside our delivery area (between Boulder Creek and Aptos). For other areas, please email maketheirdaybouquets@gmail.com.' });
     if (!v('cname')) out.push({ id: 'cname', msg: 'Enter your name.' });
     if (!/^\S+@\S+\.\S+$/.test(v('cemail'))) out.push({ id: 'cemail', msg: 'Enter a valid email address.' });
     if (!phoneOk($('cphone').value)) out.push({ id: 'cphone', msg: 'Enter a 10-digit phone number for you.' });

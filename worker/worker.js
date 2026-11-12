@@ -25,13 +25,12 @@ const PRODUCTS = {
   "test-bouquet": { name: "Test Bouquet ($1 test)", price: 100 }   // TEMPORARY: live end-to-end test, remove afterwards
 };
 
-// Every ZIP that serves addresses in Santa Cruz County, CA. Keep in sync with js/shop.js.
+// ZIP codes we deliver to: everywhere between Boulder Creek and Aptos (Santa Cruz County ZIPs, minus Watsonville). Keep in sync with js/shop.js.
 const ZIPS = {
   "95001": "Aptos", "95003": "Aptos", "95005": "Ben Lomond", "95006": "Boulder Creek", "95007": "Brookdale",
   "95010": "Capitola", "95017": "Davenport", "95018": "Felton", "95019": "Freedom", "95041": "Mount Hermon",
   "95060": "Santa Cruz", "95061": "Santa Cruz", "95062": "Santa Cruz", "95063": "Santa Cruz", "95064": "Santa Cruz",
-  "95065": "Santa Cruz", "95066": "Scotts Valley", "95067": "Scotts Valley", "95073": "Soquel",
-  "95076": "Watsonville", "95077": "Watsonville"
+  "95065": "Santa Cruz", "95066": "Scotts Valley", "95067": "Scotts Valley", "95073": "Soquel"
 };
 
 const RULES = {
@@ -75,7 +74,7 @@ export function validateOrder(b, now = new Date()) {
 
   const r = b.recipient || {}, c = b.customer || {};
   const zip = clean(r.zip, 10).slice(0, 5);
-  if (!ZIPS[zip]) return { error: "Sorry, we only deliver within Santa Cruz County, CA. That ZIP code is outside our delivery area." };
+  if (!ZIPS[zip]) return { error: "Sorry, we deliver anywhere between Boulder Creek and Aptos, and that ZIP code is outside that area. For deliveries elsewhere, please email maketheirdaybouquets@gmail.com." };
   const dp = dateProblem(clean(b.deliveryDate, 10), now); if (dp) return { error: dp };
   const rname = clean(r.name, 80), address1 = clean(r.address1, 120);
   if (!rname) return { error: "Please enter the recipient's name." };
