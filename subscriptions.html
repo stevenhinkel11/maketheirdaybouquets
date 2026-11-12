@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flower Subscriptions — Make Their Day Bouquets</title>
+<meta name="description" content="Weekly, biweekly or monthly flower subscriptions from Make Their Day Bouquets. Local delivery in Santa Cruz County, CA.">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F2W7M2RE34');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&family=Playfair+Display:ital,wght@1,400&family=Work+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f6f0e6; --paper:#efe6d6; --ink:#2b2a26; --muted:#7a7468;
+    --marigold:#d98a1f; --marigold-dk:#b9700f;
+    --serif:'Cormorant Garamond',Georgia,serif; --sans:'Jost',system-ui,sans-serif;
+    --gutter:clamp(18px,4vw,56px);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  img{display:block;width:100%;height:100%;object-fit:cover}
+  a{color:inherit}
+
+  /* header */
+  header{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:12px var(--gutter);color:var(--ink);background:rgba(246,240,230,.94);backdrop-filter:blur(8px)}
+  header,header.solid{background:rgba(246,240,230,.94);backdrop-filter:blur(8px);color:var(--ink);padding-block:12px}
+  .brand{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.4vw,27px);text-decoration:none;letter-spacing:.01em}
+  .meta{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.9}
+  .btn{display:inline-block;font:500 12px var(--sans);letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:1.5px solid currentColor;background:transparent;color:inherit;padding:12px 24px;border-radius:999px;transition:.25s}
+  .btn:hover{background:var(--marigold);border-color:var(--marigold);color:#fff}
+  .btn.solid{background:var(--marigold);border-color:var(--marigold);color:#fff}
+  .btn.solid:hover{background:var(--marigold-dk);border-color:var(--marigold-dk)}
+  @media(max-width:720px){.meta{display:none}}
+
+  /* hero */
+  .hero{position:relative;height:100svh;min-height:560px;overflow:hidden;background:#3a3a2e}
+  .hero img{position:absolute;inset:0;object-position:50% 62%;transform:scale(1.06);animation:settle 2.4s ease-out forwards}
+  @keyframes settle{to{transform:scale(1)}}
+  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 42% at 50% 50%,rgba(20,14,16,.38),rgba(20,14,16,0) 72%);pointer-events:none}
+  .hero-copy{position:absolute;z-index:2;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 var(--gutter);color:#fff}
+  .hero img{filter:saturate(1.05)}
+  .hero-copy{text-shadow:0 1px 5px rgba(0,0,0,.5),0 2px 44px rgba(0,0,0,.7)}
+  .hero h1{font:italic 400 clamp(52px,12vw,180px)/.92 'Playfair Display',Georgia,serif}
+  .hero p{margin-top:28px;line-height:2;font:500 12px 'Work Sans',system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase}
+
+  .quad{display:grid;grid-template-columns:repeat(3,1fr);max-width:1200px;margin:0 auto;gap:clamp(10px,1.6vw,22px);padding:clamp(40px,6vw,90px) var(--gutter) 0;align-items:start}
+  .quad figure{aspect-ratio:3/4;overflow:hidden;background:var(--paper)}
+  .quad .cell{margin-top:clamp(30px,5vw,80px);text-align:center}
+  .quad .cell figure{margin:0;text-align:left}
+  .quad > figure:nth-child(3){margin-top:clamp(15px,2.5vw,40px)}
+  @media(max-width:720px){.quad{grid-template-columns:1fr 1fr}.quad .cell{margin-top:30px}.quad > figure:nth-child(3){grid-column:1/-1;margin-top:0;aspect-ratio:4/3}}
+  .quad img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+  .quad figure:hover img{transform:scale(1.04)}
+  
+  /* intro */
+  .intro{padding:clamp(70px,11vw,150px) var(--gutter);text-align:center}
+  .intro p{font:400 clamp(28px,4.4vw,60px)/1.18 var(--serif);max-width:20ch;margin:auto}
+  .intro p em{color:var(--marigold-dk)}
+
+  /* staggered trio */
+  .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2vw,28px);padding:0 var(--gutter);align-items:start}
+  .trio figure{aspect-ratio:3/4;overflow:hidden;background:var(--paper)}
+  .trio figure:nth-child(2){margin-top:clamp(40px,9vw,140px)}
+  .trio figure:nth-child(3){margin-top:clamp(20px,4.5vw,70px)}
+  .trio img,.duo img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+  figure:hover img{transform:scale(1.04)}
+
+  /* duo */
+  .duo{display:grid;grid-template-columns:1fr;max-width:600px;margin-left:auto;margin-right:auto;gap:clamp(12px,2vw,28px);padding:clamp(60px,9vw,130px) var(--gutter) 0}
+  .duo figure{overflow:hidden;aspect-ratio:4/5;background:var(--paper)}
+
+  .trio.more{margin-top:clamp(70px,10vw,140px);grid-template-columns:repeat(2,1fr);max-width:900px;margin-left:auto;margin-right:auto}
+  .trio .cell{text-align:center}
+  .trio.more2 .cell{margin-top:clamp(40px,9vw,140px)}
+  .trio:not(.more):not(.more2):not(.pair2) .cell{margin-top:clamp(40px,9vw,140px)}
+  .trio .cell figure{margin:0;text-align:left}
+  .btn.small{margin-top:18px;padding:9px 20px;font-size:11px;letter-spacing:.18em}
+  @media(max-width:720px){.trio.more2 .cell,.trio:not(.more):not(.more2):not(.pair2) .cell{margin-top:40px}}
+  .trio.pair2{grid-template-columns:repeat(2,1fr);max-width:900px;margin-left:auto;margin-right:auto}
+  .trio.pair2 .cell{margin-top:0}
+  .trio.solo{grid-template-columns:1fr;max-width:460px}
+  .trio.pair2 figure:nth-child(2){margin-top:clamp(40px,9vw,140px)}
+  .pumpkins{max-width:1100px;margin:clamp(70px,10vw,140px) auto 0;padding:0 var(--gutter);text-align:center}
+  .pumpkins figure{overflow:hidden;background:var(--paper);text-align:left}
+  .pumpkins .wide{aspect-ratio:1448/1086}
+  .pumpkins .pair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.6vw,22px);max-width:780px;margin:clamp(12px,1.8vw,24px) auto clamp(30px,4vw,48px)}
+  .pumpkins .pair figure{aspect-ratio:3/4}
+  .pumpkins .pair figure:nth-child(2){margin-top:clamp(30px,5vw,70px)}
+  .pumpkins figure img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+  .pumpkins figure:hover img{transform:scale(1.04)}
+  .trio.more2{margin-top:0}
+  .quad + .trio{margin-top:clamp(70px,10vw,140px)}
+  .intro + .pumpkins{margin-top:0}
+  @media(min-width:721px){.trio.flowers1{grid-template-columns:repeat(3,1fr);max-width:1200px}}
+  .trio.single{margin-top:clamp(70px,10vw,140px);max-width:440px}
+  .pumpkins + .trio{margin-top:clamp(70px,10vw,140px)}
+  .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
+  .band{position:relative;margin-top:clamp(70px,10vw,140px);height:min(90vh,820px);overflow:hidden}
+  .band img{filter:brightness(1.14) saturate(1.1);object-position:50% 45%}
+  .subs{display:grid;grid-template-columns:1fr;max-width:760px;margin:0 auto;padding:clamp(80px,12vw,160px) var(--gutter) 0}
+  .subs figure{aspect-ratio:548/1024;overflow:hidden;background:var(--paper)}
+  .subs h2{font:italic 400 clamp(36px,4.6vw,60px)/1.05 var(--serif);margin-bottom:10px}
+  .subs .lead{font:italic 400 clamp(21px,2.2vw,27px)/1.25 var(--serif);color:var(--marigold-dk);margin-bottom:22px}
+  .subs p{font-size:clamp(16px,1.4vw,17px);line-height:1.7;color:#4a4740;margin-bottom:14px}
+  .subs .plans{display:grid;gap:12px;margin:22px 0 6px}
+  .subs .plan{padding:16px 20px;border:1.5px solid rgba(43,42,38,.18);border-left:4px solid var(--marigold);border-radius:4px;background:#fbf8f2}
+  .subs .plan h3{font:italic 500 clamp(22px,2.2vw,26px)/1.15 var(--serif);margin-bottom:4px}
+  .subs .plan p{margin:0;font-size:16px}
+  .subs .perfect{font-weight:500;color:var(--ink);margin:22px 0 8px}
+  .subs ul{list-style:none;padding:0;margin:0 0 22px}
+  .subs li{position:relative;padding-left:22px;margin-bottom:6px;color:#4a4740}
+  .subs li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--marigold)}
+  .subs .ask{color:var(--ink);margin-bottom:22px}
+  .subs .because{font:italic 400 clamp(22px,2.4vw,28px)/1.3 var(--serif);color:var(--ink);margin:26px 0 0}
+  @media(max-width:820px){.subs{grid-template-columns:1fr}.subs figure{max-width:340px;margin:0 auto;width:100%}}
+  /* square checkout modal */
+  #square-modal{border:0;border-radius:6px;padding:0;width:min(960px,96vw);height:min(88vh,860px);background:var(--cream);margin:auto;overflow:hidden}
+  #square-modal[open]{display:flex;flex-direction:column}
+  #square-modal::backdrop{background:rgba(30,28,22,.6);backdrop-filter:blur(3px)}
+  #square-modal .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(43,42,38,.15);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+  #square-modal .bar a{color:var(--muted);text-decoration:none}#square-modal .bar a:hover{color:var(--marigold-dk)}
+  #square-modal .bar button{background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;color:var(--ink);padding:6px}
+  #square-modal iframe{flex:1;width:100%;border:0;background:#fff}
+  /* closing */
+  .close{padding:clamp(70px,11vw,160px) var(--gutter) clamp(60px,9vw,120px);text-align:center}
+  .stand{max-width:1000px;margin:0 auto;padding:0 var(--gutter) clamp(60px,9vw,120px)}
+  .stand figure{overflow:hidden;background:var(--paper)}
+  .close h2{font:italic 400 clamp(44px,8vw,120px)/.95 var(--serif);margin-bottom:40px}
+  footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:26px var(--gutter);border-top:1px solid rgba(43,42,38,.15);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  footer a{text-decoration:none}footer a:hover{color:var(--marigold-dk)}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.hero img{animation:none;transform:none}}
+
+  @media(max-width:720px){
+    .trio{grid-template-columns:1fr 1fr}
+    .trio figure:nth-child(3){grid-column:1/-1;margin-top:0;aspect-ratio:4/3}
+    .trio figure:nth-child(2){margin-top:40px}
+    
+  }
+
+
+
+
+  .ig{display:flex;width:fit-content;max-width:100%;align-items:center;gap:clamp(14px,2.4vw,26px);margin:clamp(56px,8vw,110px) auto 0;text-decoration:none;color:var(--ink);transition:color .25s}
+  .ig svg{width:clamp(44px,6vw,72px);height:clamp(44px,6vw,72px);flex:none}
+  .ig span{font:italic 400 clamp(26px,5.2vw,64px)/1 var(--serif);border-bottom:2px solid transparent;transition:border-color .25s}
+  .ig:hover{color:var(--marigold-dk)}.ig:hover span{border-color:currentColor}
+  footer a{font-size:13px}
+  footer a.mail{text-transform:none;letter-spacing:.06em;font-size:14px}
+
+  header .nav{display:flex;align-items:center;gap:clamp(14px,2vw,28px)}
+  .navlink{font:500 12px var(--sans);letter-spacing:.2em;text-transform:uppercase;text-decoration:none}
+  .navlink:hover{color:var(--marigold-dk)}
+  @media(max-width:720px){.navlink{display:none}}
+  .sublink{display:inline-block;margin-top:26px;font:italic 400 clamp(20px,2.2vw,26px)/1.2 var(--serif);color:var(--marigold-dk);text-decoration:none;border-bottom:1px solid currentColor}
+  .subs{padding-top:clamp(120px,14vw,190px);padding-bottom:clamp(60px,9vw,120px)}
+</style>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+
+<header id="top">
+  <span class="meta">Santa Cruz County, CA</span>
+  <a class="brand" href="index.html">Make Their Day Bouquets</a>
+  <span class="nav"><a class="navlink" href="index.html">Home</a><a class="btn" href="order.html">Order Flowers</a></span>
+</header>
+
+<section class="subs">
+  <div class="txt rv">
+    <h2>Fresh Flowers, All the Time!</h2>
+    <p class="lead">A little beauty to look forward to, again and again.</p>
+    <p>Why wait for a special occasion to enjoy fresh flowers? Treat yourself or someone you love to beautiful, seasonal bouquets with a Make Their Day Bouquets flower subscription!</p>
+    <p>Each arrangement is thoughtfully designed using fresh, seasonal blooms, making every bouquet a unique surprise.</p>
+    <p>Whether you'd love flowers delivered weekly, every other week, or once a month, we'll create a subscription that fits your style and budget.</p>
+    <div class="plans">
+      <div class="plan"><h3>Flowers for Yourself</h3><p>Weekly, biweekly, or monthly deliveries.</p></div>
+      <div class="plan"><h3>Flowers for Someone Special</h3><p>A gift subscription. Weekly, biweekly, or monthly deliveries.</p></div>
+    </div>
+    <p class="perfect">Perfect for:</p>
+    <ul>
+      <li>Brightening your home or office</li>
+      <li>Giving a thoughtful gift that keeps on giving</li>
+      <li>Celebrating life's everyday moments</li>
+      <li>Simply treating yourself!</li>
+    </ul>
+    <p class="ask"><strong>Interested in a flower subscription?</strong><br>Get in touch and let's create something beautiful together!</p>
+    <a class="btn solid" href="order.html?type=subscription">Start a Subscription</a>
+    <p class="because">Because every day deserves a little beauty. 🌸</p>
+  </div>
+</section>
+
+<footer>
+  <span>© <span id="yr"></span> Make Their Day Bouquets</span>
+  <span><a class="mail" href="mailto:maketheirdaybouquets@gmail.com">maketheirdaybouquets@gmail.com</a> &nbsp;·&nbsp; <a href="privacy.html">Privacy</a> &nbsp;·&nbsp; <a href="https://www.instagram.com/maketheirdaybouquets/" target="_blank" rel="noopener">Instagram</a></span>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent=new Date().getFullYear();
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

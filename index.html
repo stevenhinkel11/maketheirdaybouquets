@@ -159,7 +159,13 @@
   .ig:hover{color:var(--marigold-dk)}.ig:hover span{border-color:currentColor}
   footer a{font-size:13px}
   footer a.mail{text-transform:none;letter-spacing:.06em;font-size:14px}
-</style>
+
+  header .nav{display:flex;align-items:center;gap:clamp(14px,2vw,28px)}
+  .navlink{font:500 12px var(--sans);letter-spacing:.2em;text-transform:uppercase;text-decoration:none}
+  .navlink:hover{color:var(--marigold-dk)}
+  @media(max-width:720px){.navlink{display:none}}
+  .sublink{display:inline-block;margin-top:26px;font:italic 400 clamp(20px,2.2vw,26px)/1.2 var(--serif);color:var(--marigold-dk);text-decoration:none;border-bottom:1px solid currentColor}
+  </style>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -169,7 +175,7 @@
 <header id="top">
   <span class="meta">Santa Cruz County, CA</span>
   <a class="brand" href="#top">Make Their Day Bouquets</a>
-  <a class="btn" href="order.html">Order Flowers</a>
+  <span class="nav"><a class="navlink" href="subscriptions.html">Subscriptions</a><a class="btn" href="order.html">Order Flowers</a></span>
 </header>
 
 <section class="hero">
@@ -220,34 +226,11 @@
   <a class="btn solid rv" href="order.html?type=pumpkin">Order Pumpkin Arrangements!</a>
 </section>
 
-<section class="subs">
-  <div class="txt rv">
-    <h2>Fresh Flowers, All the Time!</h2>
-    <p class="lead">A little beauty to look forward to, again and again.</p>
-    <p>Why wait for a special occasion to enjoy fresh flowers? Treat yourself or someone you love to beautiful, seasonal bouquets with a Make Their Day Bouquets flower subscription!</p>
-    <p>Each arrangement is thoughtfully designed using fresh, seasonal blooms, making every bouquet a unique surprise.</p>
-    <p>Whether you'd love flowers delivered weekly, every other week, or once a month, we'll create a subscription that fits your style and budget.</p>
-    <div class="plans">
-      <div class="plan"><h3>Flowers for Yourself</h3><p>Weekly, biweekly, or monthly deliveries.</p></div>
-      <div class="plan"><h3>Flowers for Someone Special</h3><p>A gift subscription. Weekly, biweekly, or monthly deliveries.</p></div>
-    </div>
-    <p class="perfect">Perfect for:</p>
-    <ul>
-      <li>Brightening your home or office</li>
-      <li>Giving a thoughtful gift that keeps on giving</li>
-      <li>Celebrating life's everyday moments</li>
-      <li>Simply treating yourself!</li>
-    </ul>
-    <p class="ask"><strong>Interested in a flower subscription?</strong><br>Get in touch and let's create something beautiful together!</p>
-    <a class="btn solid" href="order.html?type=subscription">Start a Subscription</a>
-    <p class="because">Because every day deserves a little beauty. 🌸</p>
-  </div>
-</section>
-
 <section class="close">
   <img class="logo rv" src="assets/img/logo.jpg" width="220" height="220" loading="lazy" alt="Make Their Day Bouquets logo: a smiling girl holding a colorful bouquet">
   <h2 class="rv">Let’s make someone’s day</h2>
   <a class="btn solid rv" href="order.html">Order Flowers</a>
+  <br><a class="sublink rv" href="subscriptions.html">Flower subscriptions →</a>
 
   <a class="ig rv" href="https://www.instagram.com/maketheirdaybouquets/" target="_blank" rel="noopener" aria-label="Follow Make Their Day Bouquets on Instagram">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r=".9" fill="currentColor" stroke="none"/></svg>
