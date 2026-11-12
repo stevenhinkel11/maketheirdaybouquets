@@ -1,4 +1,4 @@
-import { validateOrder, earliestDate, dateProblem, buildNote, normalizePhone, createPaymentLink } from './worker.js';
+import { validateOrder, earliestDate, dateProblem, buildNote, normalizePhone, createPaymentLink, buildEmail, buildCustomerEmail } from './worker.js';
 const out = typeof print === 'function' ? print : console.log;
 let fail = 0;
 const t = (name, cond) => { out((cond ? 'PASS ' : 'FAIL ') + name); if (!cond) fail++; };
@@ -81,6 +81,35 @@ for (const m of ['shipment', 'none']) {
   if (m === 'shipment') t('shipment mode builds SHIPMENT fulfillment', o3.fulfillments[0].type === 'SHIPMENT' && o3.fulfillments[0].shipment_details.recipient.address.postal_code === '95060');
   else t('none mode has no fulfillment but keeps address in line item note', !o3.fulfillments && /95060/.test(o3.line_items[0].note) && /2026-11-14/.test(o3.line_items[0].note));
   t(m + ' mode still has tax', !!(o3.taxes && o3.taxes[0]));
+}
+// metadata is structured for the email
+{
+  const md = calls.find(c => c.url.includes('payment-links')).body.order.metadata;
+  t('metadata has <=10 keys', Object.keys(md).length <= 10);
+  t('metadata carries buyer + recipient + address', md.buyer_email === 'sam@example.com' && md.recipient_name === 'Pat' && /95060/.test(md.address));
+}
+// ---- the owner's new-order email ----
+{
+  const order = { id: 'ORD123', line_items: [{ name: 'Luxury Bouquet', quantity: '1', gross_sales_money: { amount: 10000 }, total_money: { amount: 10000 } }],
+    total_tax_money: { amount: 950 }, total_money: { amount: 10950 },
+    metadata: { delivery_date: '2026-11-14', recipient_name: 'Pat <b>Jones</b>', recipient_phone: '+18315550123', address: '1 Main St, Apt 2, Santa Cruz, CA 95060',
+      gift_message: 'Happy birthday & many more!', gift_from: 'Sam', delivery_notes: 'Gate code 1234', buyer_name: 'Sam Lee', buyer_phone: '+18315550100', buyer_email: 'sam@example.com' } };
+  const e = buildEmail(order, { receipt_url: 'https://squareup.com/receipt/preview/X', buyer_email_address: 'typed@example.com', card_details: { card: { card_brand: 'VISA', last_4: '7820' } } });
+  t('email subject has date, city, recipient', /^New order · deliver Sat, Nov 14 · Santa Cruz · Pat/.test(e.subject));
+  t('email shows address, notes, message, totals', /1 Main St, Apt 2/.test(e.html) && /Gate code 1234/.test(e.html) && /Happy birthday &amp; many more!/.test(e.html) && /\$109\.50/.test(e.html) && /\$9\.50/.test(e.html));
+  t('email escapes HTML in user text', !/<b>Jones<\/b>/.test(e.html) && /&lt;b&gt;Jones/.test(e.html));
+  t('email has map link, receipt link, buyer email', /google\.com\/maps/.test(e.html) && /squareup\.com\/receipt/.test(e.html) && /mailto:sam@example\.com/.test(e.html));
+  t('email shows typed receipt email when different', /typed@example\.com/.test(e.html));
+  t('plain-text version has the essentials', /Saturday, November 14, 2026/.test(e.text) && /Total paid: \$109\.50/.test(e.text) && /Gate code 1234/.test(e.text));
+  const min = buildEmail({ id: 'X', line_items: [], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null);
+  t('email builds with minimal data (no crash)', /Total paid: \$1\.00/.test(min.text));
+  const ce = buildCustomerEmail(order, null);
+  t('customer subject has date', /^Your order is confirmed · delivery Sat, Nov 14/.test(ce.subject));
+  t('customer email greets by first name', /Thank you, Sam!/.test(ce.html) && /Thank you, Sam!/.test(ce.text));
+  t('customer email has delivery, message and total', /1 Main St, Apt 2/.test(ce.html) && /Happy birthday &amp; many more!/.test(ce.html) && /\$109\.50/.test(ce.html) && /Delivery<\/td><td[^>]*>Free/.test(ce.html));
+  t('customer email hides internal buyer phone/email rows', !/\+18315550100/.test(ce.html) && !/mailto:/.test(ce.html));
+  t('customer email escapes HTML', !/<b>Jones<\/b>/.test(ce.html));
+  t('customer email builds with minimal data', /Total paid: \$1\.00/.test(buildCustomerEmail({ id: 'X', line_items: [], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).text));
 }
 // strict: no tax configured -> refuse rather than undercharge (fresh module state needs a new tax cache, so use a new env path)
 let threw = false;

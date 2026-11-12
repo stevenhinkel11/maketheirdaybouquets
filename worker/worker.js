@@ -148,7 +148,7 @@ export async function createPaymentLink(env, o) {
     location_id: env.SQUARE_LOCATION_ID,
     reference_id: ("MTD-" + o.deliveryDate).slice(0, 40),
     line_items: lineItems,
-    metadata: { delivery_date: o.deliveryDate, recipient: o.recipient.name.slice(0, 120) }
+    metadata: {}
   };
   if (mode === "delivery") {
     order.fulfillments = [{ type: "DELIVERY", state: "PROPOSED", delivery_details: { recipient: recip, schedule_type: "SCHEDULED", deliver_at: deliverAt, note: buildNote(o) } }];
@@ -157,12 +157,15 @@ export async function createPaymentLink(env, o) {
   } else { // "none": keep everything in the line item note + metadata
     const where = [o.recipient.name, o.recipient.phone, o.recipient.address1, o.recipient.address2, o.recipient.city + ", CA " + o.recipient.zip].filter(Boolean).join(", ");
     for (const li of lineItems) li.note = ("DELIVER " + o.deliveryDate + " TO " + where + " | " + buildNote(o)).slice(0, 490);
-    order.metadata.address = (o.recipient.address1 + " " + (o.recipient.address2 || "") + ", " + o.recipient.city + " " + o.recipient.zip).slice(0, 250);
   }
-  // Square rejects empty metadata values, so only add the optional ones when they have text.
-  if (o.giftMessage) order.metadata.gift_message = o.giftMessage.slice(0, 250);
-  if (o.giftFrom) order.metadata.gift_from = o.giftFrom.slice(0, 60);
-  if (o.instructions) order.metadata.delivery_notes = o.instructions.slice(0, 200);
+  // Structured order details (max 10 keys). The new-order email is built from these. Square rejects empty values.
+  const md = {
+    delivery_date: o.deliveryDate, recipient_name: o.recipient.name, recipient_phone: o.recipient.phone,
+    address: [o.recipient.address1, o.recipient.address2, o.recipient.city + ", CA " + o.recipient.zip].filter(Boolean).join(", "),
+    gift_message: o.giftMessage, gift_from: o.giftFrom, delivery_notes: o.instructions,
+    buyer_name: o.customer.name, buyer_phone: o.customer.phone, buyer_email: o.customer.email
+  };
+  for (const [k, v] of Object.entries(md)) if (v) order.metadata[k] = String(v).slice(0, 250);
   if (useCatalog) order.pricing_options = { auto_apply_taxes: true };
   else {
     // Custom line items don't carry tax by themselves: attach the sales tax already set up in her Square account.
@@ -185,6 +188,156 @@ export async function createPaymentLink(env, o) {
   return { url: j.payment_link.url, embedUrl: j.payment_link.long_url || "", usedCatalog: useCatalog };
 }
 
+/* ---------- New-order email (Square webhook → Resend) ---------- */
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const usd = c => "$" + ((Number(c) || 0) / 100).toFixed(2);
+const prettyDate = ymd => /^\d{4}-\d{2}-\d{2}$/.test(ymd || "") ? new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(new Date(ymd + "T12:00:00Z")) : (ymd || "(no date)");
+const shortDate = ymd => /^\d{4}-\d{2}-\d{2}$/.test(ymd || "") ? new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(ymd + "T12:00:00Z")) : "";
+
+/** Builds the owner's new-order email from a Square order (+ optional payment). Pure, so it is unit-tested. */
+export function buildEmail(order, payment) {
+  const m = order.metadata || {};
+  const items = (order.line_items || []).map(li => ({ name: li.name || "Item", qty: li.quantity || "1", total: li.total_money && li.total_money.amount }));
+  const subtotal = (order.line_items || []).reduce((a, li) => a + ((li.gross_sales_money && li.gross_sales_money.amount) || 0), 0);
+  const tax = order.total_tax_money && order.total_tax_money.amount, total = order.total_money && order.total_money.amount;
+  const city = (m.address || "").split(",").slice(-2, -1)[0] ? (m.address.split(",").slice(-2, -1)[0] || "").trim() : "";
+  const maps = m.address ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(m.address) : "";
+  const payer = payment && payment.buyer_email_address;
+  const receipt = payment && payment.receipt_url;
+  const card = payment && payment.card_details && payment.card_details.card ? (payment.card_details.card.card_brand || "Card") + " ending " + payment.card_details.card.last_4 : "";
+  const subject = "New order · deliver " + (shortDate(m.delivery_date) || "date?") + (city ? " · " + city : "") + (m.recipient_name ? " · " + m.recipient_name : "");
+
+  const row = (k, v, raw) => v ? `<tr><td style="padding:6px 14px 6px 0;color:#7a7468;vertical-align:top;white-space:nowrap">${esc(k)}</td><td style="padding:6px 0;color:#2b2a26">${raw ? v : esc(v)}</td></tr>` : "";
+  const h = t => `<h2 style="font:600 13px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9700f;margin:26px 0 6px">${esc(t)}</h2>`;
+  const html = `<!doctype html><html><body style="margin:0;background:#f6f0e6;padding:22px 12px;font:15px/1.5 Arial,sans-serif;color:#2b2a26">
+<div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;padding:26px 28px">
+<div style="font:italic 26px Georgia,serif;margin-bottom:2px">New order</div>
+<div style="color:#7a7468;margin-bottom:6px">Paid through the website${card ? " · " + esc(card) : ""}</div>
+${h("Deliver")}
+<table style="border-collapse:collapse;width:100%">
+${row("Date", prettyDate(m.delivery_date))}
+${row("To", m.recipient_name)}
+${row("Phone", m.recipient_phone ? `<a href="tel:${esc(m.recipient_phone)}" style="color:#2b2a26">${esc(m.recipient_phone)}</a>` : "", true)}
+${row("Address", m.address ? `${esc(m.address)}${maps ? ` &nbsp;<a href="${esc(maps)}" style="color:#b9700f">Map</a>` : ""}` : "", true)}
+${row("Delivery notes", m.delivery_notes)}
+</table>
+${m.gift_message || m.gift_from ? h("Card message") + `<div style="background:#fdf3e1;border-left:4px solid #d98a1f;padding:12px 14px;border-radius:4px">${m.gift_message ? esc(m.gift_message) : ""}${m.gift_from ? `<div style="margin-top:6px;color:#7a7468">From: ${esc(m.gift_from)}</div>` : ""}</div>` : ""}
+${h("Order")}
+<table style="border-collapse:collapse;width:100%">
+${items.map(i => `<tr><td style="padding:5px 0">${esc(i.name)} × ${esc(i.qty)}</td><td style="padding:5px 0;text-align:right">${usd(i.total)}</td></tr>`).join("")}
+${subtotal ? `<tr><td style="padding:5px 0;color:#7a7468">Subtotal</td><td style="padding:5px 0;text-align:right;color:#7a7468">${usd(subtotal)}</td></tr>` : ""}
+${tax ? `<tr><td style="padding:5px 0;color:#7a7468">Tax</td><td style="padding:5px 0;text-align:right;color:#7a7468">${usd(tax)}</td></tr>` : ""}
+<tr><td style="padding:8px 0;border-top:1px solid #e3dccf;font-weight:bold">Total paid</td><td style="padding:8px 0;border-top:1px solid #e3dccf;text-align:right;font-weight:bold">${usd(total)}</td></tr>
+</table>
+${h("Ordered by")}
+<table style="border-collapse:collapse;width:100%">
+${row("Name", m.buyer_name)}
+${row("Phone", m.buyer_phone ? `<a href="tel:${esc(m.buyer_phone)}" style="color:#2b2a26">${esc(m.buyer_phone)}</a>` : "", true)}
+${row("Email", m.buyer_email ? `<a href="mailto:${esc(m.buyer_email)}" style="color:#2b2a26">${esc(m.buyer_email)}</a>` : "", true)}
+${payer && payer !== m.buyer_email ? row("Receipt email (typed at payment)", payer) : ""}
+</table>
+${receipt ? `<p style="margin-top:22px"><a href="${esc(receipt)}" style="color:#b9700f">View the Square receipt</a></p>` : ""}
+<p style="color:#9a948a;font-size:12px;margin-top:22px">Order ${esc(order.id || "")}</p>
+</div></body></html>`;
+
+  const text = ["NEW ORDER (paid through the website)", "",
+    "DELIVER", "Date: " + prettyDate(m.delivery_date), "To: " + (m.recipient_name || ""), "Phone: " + (m.recipient_phone || ""), "Address: " + (m.address || ""),
+    m.delivery_notes ? "Delivery notes: " + m.delivery_notes : "",
+    m.gift_message || m.gift_from ? "\nCARD MESSAGE\n" + (m.gift_message || "") + (m.gift_from ? "\nFrom: " + m.gift_from : "") : "",
+    "", "ORDER", ...items.map(i => i.name + " x " + i.qty + "  " + usd(i.total)), tax ? "Tax: " + usd(tax) : "", "Total paid: " + usd(total),
+    "", "ORDERED BY", "Name: " + (m.buyer_name || ""), "Phone: " + (m.buyer_phone || ""), "Email: " + (m.buyer_email || ""),
+    receipt ? "\nReceipt: " + receipt : ""].filter(l => l !== "").join("\n");
+  return { subject, html, text };
+}
+
+
+/** The customer-facing confirmation email (branded, no internal details). */
+export function buildCustomerEmail(order, payment) {
+  const m = order.metadata || {};
+  const first = (m.buyer_name || "").trim().split(/\s+/)[0] || "there";
+  const items = (order.line_items || []).map(li => ({ name: li.name || "Item", qty: li.quantity || "1", total: li.total_money && li.total_money.amount }));
+  const subtotal = (order.line_items || []).reduce((a, li) => a + ((li.gross_sales_money && li.gross_sales_money.amount) || 0), 0);
+  const tax = order.total_tax_money && order.total_tax_money.amount, total = order.total_money && order.total_money.amount;
+  const subject = "Your order is confirmed · delivery " + (shortDate(m.delivery_date) || "");
+  const row = (k, v) => v ? `<tr><td style="padding:6px 14px 6px 0;color:#7a7468;vertical-align:top;white-space:nowrap">${esc(k)}</td><td style="padding:6px 0">${esc(v)}</td></tr>` : "";
+  const html = `<!doctype html><html><body style="margin:0;background:#f6f0e6;padding:22px 12px;font:16px/1.6 Arial,sans-serif;color:#2b2a26">
+<div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;padding:30px 30px 26px">
+<div style="font:italic 30px Georgia,serif;margin-bottom:4px">Thank you, ${esc(first)}!</div>
+<p style="margin:0 0 18px;color:#4a4740">Your order is confirmed and we're getting your flowers ready. Here's everything we have:</p>
+<div style="font:600 12px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9700f;margin:20px 0 6px">Delivery</div>
+<table style="border-collapse:collapse;width:100%">
+${row("Date", prettyDate(m.delivery_date))}${row("To", m.recipient_name)}${row("Address", m.address)}${row("Delivery notes", m.delivery_notes)}
+</table>
+${m.gift_message || m.gift_from ? `<div style="font:600 12px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9700f;margin:22px 0 6px">Your card message</div><div style="background:#fdf3e1;border-left:4px solid #d98a1f;padding:12px 14px;border-radius:4px">${m.gift_message ? esc(m.gift_message) : ""}${m.gift_from ? `<div style="margin-top:6px;color:#7a7468">From: ${esc(m.gift_from)}</div>` : ""}</div>` : ""}
+<div style="font:600 12px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9700f;margin:22px 0 6px">Your order</div>
+<table style="border-collapse:collapse;width:100%">
+${items.map(i => `<tr><td style="padding:5px 0">${esc(i.name)} × ${esc(i.qty)}</td><td style="padding:5px 0;text-align:right">${usd(i.total)}</td></tr>`).join("")}
+${subtotal ? `<tr><td style="padding:5px 0;color:#7a7468">Subtotal</td><td style="padding:5px 0;text-align:right;color:#7a7468">${usd(subtotal)}</td></tr>` : ""}
+<tr><td style="padding:5px 0;color:#7a7468">Delivery</td><td style="padding:5px 0;text-align:right;color:#7a7468">Free</td></tr>
+${tax ? `<tr><td style="padding:5px 0;color:#7a7468">Tax</td><td style="padding:5px 0;text-align:right;color:#7a7468">${usd(tax)}</td></tr>` : ""}
+<tr><td style="padding:8px 0;border-top:1px solid #e3dccf;font-weight:bold">Total paid</td><td style="padding:8px 0;border-top:1px solid #e3dccf;text-align:right;font-weight:bold">${usd(total)}</td></tr>
+</table>
+<p style="margin:24px 0 0;color:#4a4740">Square will send you a separate receipt for your payment. Need to change something? Just reply to this email and we'll help.</p>
+<p style="margin:18px 0 0;font:italic 20px Georgia,serif">With love,<br>Make Their Day Bouquets</p>
+<p style="margin:22px 0 0;color:#9a948a;font-size:12px">Santa Cruz County, CA · maketheirdaybouquets.com</p>
+</div></body></html>`;
+  const text = ["Thank you, " + first + "!", "", "Your order is confirmed and we're getting your flowers ready.", "",
+    "DELIVERY", "Date: " + prettyDate(m.delivery_date), "To: " + (m.recipient_name || ""), "Address: " + (m.address || ""), m.delivery_notes ? "Delivery notes: " + m.delivery_notes : "",
+    m.gift_message || m.gift_from ? "\nYOUR CARD MESSAGE\n" + (m.gift_message || "") + (m.gift_from ? "\nFrom: " + m.gift_from : "") : "",
+    "", "YOUR ORDER", ...items.map(i => i.name + " x " + i.qty + "  " + usd(i.total)), "Delivery: Free", tax ? "Tax: " + usd(tax) : "", "Total paid: " + usd(total),
+    "", "Square will send you a separate receipt. Need to change something? Just reply to this email.", "", "With love,", "Make Their Day Bouquets"].filter(l => l !== "").join("\n");
+  return { subject, html, text };
+}
+
+/** Square signs webhooks: base64(HMAC-SHA256(key, notificationUrl + rawBody)). */
+export async function verifySquareSignature(rawBody, header, url, key) {
+  if (!header || !key) return false;
+  const enc = new TextEncoder();
+  const k = await crypto.subtle.importKey("raw", enc.encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", k, enc.encode(url + rawBody)));
+  let b64 = ""; for (const b of sig) b64 += String.fromCharCode(b);
+  b64 = btoa(b64);
+  if (b64.length !== header.length) return false;
+  let diff = 0; for (let i = 0; i < b64.length; i++) diff |= b64.charCodeAt(i) ^ header.charCodeAt(i);
+  return diff === 0;
+}
+
+const sqGet = async (env, path) => { const r = await fetch(squareBase(env) + path, { headers: { "Authorization": "Bearer " + env.SQUARE_ACCESS_TOKEN, "Square-Version": "2024-10-17" } }); return { ok: r.ok, j: await r.json().catch(() => ({})) }; };
+const emailed = new Set();
+
+export async function handleWebhook(req, env) {
+  const raw = await req.text();
+  const url = env.WEBHOOK_URL || req.url;
+  if (!(await verifySquareSignature(raw, req.headers.get("x-square-hmacsha256-signature"), url, env.SQUARE_WEBHOOK_SIGNATURE_KEY))) return new Response("bad signature", { status: 401 });
+  let ev; try { ev = JSON.parse(raw); } catch (_) { return new Response("bad json", { status: 400 }); }
+  const p = ev && ev.data && ev.data.object && ev.data.object.payment;
+  // Only completed, non-refunded payments
+  if (!String(ev.type || "").startsWith("payment.") || !p || p.status !== "COMPLETED" || !p.order_id || (p.refunded_money && p.refunded_money.amount > 0)) return new Response("ignored", { status: 200 });
+  if (emailed.has(p.id) || (env.ORDERS_KV && await env.ORDERS_KV.get("sent:" + p.id))) return new Response("duplicate", { status: 200 });
+  const { ok, j } = await sqGet(env, "/v2/orders/" + encodeURIComponent(p.order_id));
+  if (!ok || !j.order) { console.log("order fetch failed", JSON.stringify(j)); return new Response("order fetch failed", { status: 500 }); }
+  if (!(j.order.metadata && j.order.metadata.delivery_date)) return new Response("not a website order", { status: 200 });
+  const { subject, html, text } = buildEmail(j.order, p);
+  if (!env.RESEND_API_KEY || !env.NOTIFY_TO) { console.log("email not configured"); return new Response("email not configured", { status: 500 }); }
+  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: env.NOTIFY_FROM || "Make Their Day Orders <onboarding@resend.dev>", to: env.NOTIFY_TO.split(",").map(s => s.trim()), subject, html, text, reply_to: (j.order.metadata.buyer_email || undefined) }) });
+  if (!r.ok) { console.log("resend failed", r.status, await r.text()); return new Response("email failed", { status: 500 }); }
+  emailed.add(p.id); if (env.ORDERS_KV) await env.ORDERS_KV.put("sent:" + p.id, "1", { expirationTtl: 60 * 60 * 24 * 14 });
+
+  // Customer confirmation (needs a verified sending domain: set CUSTOMER_FROM, e.g. "Make Their Day Bouquets <orders@maketheirdaybouquets.com>").
+  // A failure here never blocks the owner email, which has already been sent.
+  const buyer = j.order.metadata.buyer_email;
+  if (env.CUSTOMER_FROM && buyer) {
+    try {
+      const c = buildCustomerEmail(j.order, p);
+      const cr = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ from: env.CUSTOMER_FROM, to: [buyer], subject: c.subject, html: c.html, text: c.text, reply_to: env.NOTIFY_TO.split(",")[0].trim() }) });
+      if (!cr.ok) console.log("customer email failed", cr.status, await cr.text());
+    } catch (e) { console.log("customer email error", String(e)); }
+  }
+  return new Response("sent", { status: 200 });
+}
+
 /* ---------- HTTP ---------- */
 function cors(env, req) {
   const allowed = (env.ALLOWED_ORIGINS || "https://maketheirdaybouquets.com,https://www.maketheirdaybouquets.com,https://stevenhinkel11.github.io").split(",").map(s => s.trim());
@@ -199,6 +352,7 @@ export default {
     const h = cors(env, req);
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: h });
     const path = new URL(req.url).pathname;
+    if (req.method === "POST" && path === "/webhook") return handleWebhook(req, env);
     if (req.method !== "POST" || path !== "/checkout") return json({ error: "Not found." }, 404, h);
     let body; try { body = await req.json(); } catch (_) { return json({ error: "Invalid request." }, 400, h); }
     const v = validateOrder(body); if (v.error) return json({ error: v.error }, 400, h);

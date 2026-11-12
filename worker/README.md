@@ -69,3 +69,21 @@ From zip-codes.com's Santa Cruz County page (21 ZIPs). Notes:
 ## Tests
 `worker/test.mjs` checks the validation rules (ZIPs, dates, cutoff, prices). Run it with Node (`node worker/test.mjs`)
 or any JS engine that supports modules.
+
+## New-order emails (owner + customer)
+When a payment completes, Square calls `POST /webhook` on this Worker. The Worker verifies Square's signature, loads the
+order, and sends (1) an order sheet to the owner and (2) a confirmation to the customer, through Resend (resend.com).
+It ignores refunds, unfinished payments and orders that didn't come from the website.
+
+Worker settings:
+| Name | Type | Value |
+|---|---|---|
+| `RESEND_API_KEY` | Secret | API key from resend.com |
+| `NOTIFY_TO` | Text | `maketheirdaybouquets@gmail.com` (comma-separate for more people) |
+| `SQUARE_WEBHOOK_SIGNATURE_KEY` | Secret | from the Square webhook subscription |
+| `WEBHOOK_URL` | Text | exactly the URL entered in Square, e.g. `https://mtd-checkout.stevenhinkel.workers.dev/webhook` |
+| `CUSTOMER_FROM` | Text | optional, enables the customer email, e.g. `Make Their Day Bouquets <orders@maketheirdaybouquets.com>` (needs a domain verified in Resend) |
+| `NOTIFY_FROM` | Text | optional sender for the owner email (default `onboarding@resend.dev`, which can only email the Resend account owner) |
+
+Square: Developer Dashboard → your app → **Webhooks → Subscriptions → Add subscription** → URL above, event
+**payment.updated**. Do it for Sandbox and Production separately; each has its own signature key.
