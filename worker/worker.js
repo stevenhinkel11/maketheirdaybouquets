@@ -273,7 +273,11 @@ export function buildCustomerEmail(order, payment) {
   const subject = "Your order is confirmed · delivery " + (shortDate(m.delivery_date) || "");
   const row = (k, v) => v ? `<tr><td style="padding:6px 14px 6px 0;color:#7a7468;vertical-align:top;white-space:nowrap">${esc(k)}</td><td style="padding:6px 0">${esc(v)}</td></tr>` : "";
   const html = `<!doctype html><html><body style="margin:0;background:#f6f0e6;padding:22px 12px;font:16px/1.6 Arial,sans-serif;color:#2b2a26">
-<div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;padding:30px 30px 26px">
+<div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;overflow:hidden">
+<div style="background:#f6f0e6;text-align:center;padding:26px 20px 20px;border-bottom:3px solid #d98a1f">
+<a href="https://maketheirdaybouquets.com" style="text-decoration:none"><img src="https://maketheirdaybouquets.com/assets/img/logo.jpg" width="84" height="84" alt="Make Their Day Bouquets" style="display:block;margin:0 auto 10px;border-radius:42px;border:0"><span style="font:italic 24px Georgia,serif;color:#2b2a26">Make Their Day Bouquets</span></a>
+</div>
+<div style="padding:28px 30px 26px">
 <div style="font:italic 30px Georgia,serif;margin-bottom:4px">Thank you, ${esc(first)}!</div>
 <p style="margin:0 0 18px;color:#4a4740">Your order is confirmed and we're getting your flowers ready. Here's everything we have:</p>
 <div style="font:600 12px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9700f;margin:20px 0 6px">Delivery</div>
@@ -291,7 +295,8 @@ ${tax ? `<tr><td style="padding:5px 0;color:#7a7468">Tax</td><td style="padding:
 </table>
 <p style="margin:24px 0 0;color:#4a4740">Square will send you a separate receipt for your payment. Need to change something? Just reply to this email and we'll help.</p>
 <p style="margin:18px 0 0;font:italic 20px Georgia,serif">With love,<br>Make Their Day Bouquets</p>
-<p style="margin:22px 0 0;color:#9a948a;font-size:12px">Santa Cruz County, CA · maketheirdaybouquets.com</p>
+</div>
+<div style="background:#f6f0e6;text-align:center;padding:16px 20px;font-size:12px;color:#7a7468">Santa Cruz County, CA · <a href="https://maketheirdaybouquets.com" style="color:#b9700f;text-decoration:none">maketheirdaybouquets.com</a> · <a href="https://www.instagram.com/maketheirdaybouquets/" style="color:#b9700f;text-decoration:none">@maketheirdaybouquets</a></div>
 </div></body></html>`;
   const text = ["Thank you, " + first + "!", "", "Your order is confirmed and we're getting your flowers ready.", "",
     "DELIVERY", "Date: " + prettyDate(m.delivery_date), "To: " + (m.recipient_name || ""), "Address: " + (m.address || ""), m.delivery_notes ? "Delivery notes: " + m.delivery_notes : "",

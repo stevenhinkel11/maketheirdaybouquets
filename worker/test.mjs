@@ -125,6 +125,7 @@ for (const m of ['shipment', 'none']) {
   t('customer subject has date', /^Your order is confirmed · delivery Sat, Nov 14/.test(ce.subject));
   t('customer email greets by first name', /Thank you, Sam!/.test(ce.html) && /Thank you, Sam!/.test(ce.text));
   t('customer email has delivery, message and total', /1 Main St, Apt 2/.test(ce.html) && /Happy birthday &amp; many more!/.test(ce.html) && /\$109\.50/.test(ce.html) && /Delivery<\/td><td[^>]*>Free/.test(ce.html));
+  t('customer email has logo and brand footer', /assets\/img\/logo\.jpg/.test(ce.html) && /@maketheirdaybouquets/.test(ce.html));
   t('customer email hides internal buyer phone/email rows', !/\+18315550100/.test(ce.html) && !/mailto:/.test(ce.html));
   t('customer email escapes HTML', !/<b>Jones<\/b>/.test(ce.html));
   t('customer email builds with minimal data', /Total paid: \$1\.00/.test(buildCustomerEmail({ id: 'X', line_items: [], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).text));
