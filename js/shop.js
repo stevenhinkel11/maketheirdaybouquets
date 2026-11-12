@@ -14,6 +14,11 @@
       image800: "assets/img/800/pink-bowl.jpg",
       alt: "Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"
     }
+    ,
+    { // TEMPORARY hidden $1 product for a live end-to-end test. Not shown in the shop; add via store.html?add=test-bouquet
+      id: "test-bouquet", name: "Test Bouquet ($1 test)", price: 100, hidden: true,
+      description: "Live checkout test.", image: "assets/img/pink-bowl.jpg", image800: "assets/img/800/pink-bowl.jpg", alt: ""
+    }
   ];
 
   // Every ZIP code that serves addresses in Santa Cruz County, CA (verified against zip-codes.com; see worker/README.md).

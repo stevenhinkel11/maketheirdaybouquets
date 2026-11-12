@@ -14,7 +14,8 @@ const PRODUCTS = {
     name: "Luxury Bouquet",
     price: 10000                  // cents. Products live on the website; you do NOT need to create them in Square.
     // Optional: add  squareName: "Item name in Square"  to use an existing Square catalog item instead.
-  }
+  },
+  "test-bouquet": { name: "Test Bouquet ($1 test)", price: 100 }   // TEMPORARY: live end-to-end test, remove afterwards
 };
 
 // Every ZIP that serves addresses in Santa Cruz County, CA. Keep in sync with js/shop.js.

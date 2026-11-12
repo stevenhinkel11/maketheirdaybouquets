@@ -55,8 +55,9 @@
 <script>
   const { Cart, PRODUCTS, money, find } = MTD;
   document.getElementById('yr').textContent = new Date().getFullYear();
+  { const add = new URLSearchParams(location.search).get('add'); if (add && find(add)) { Cart.clear(); Cart.add(add); location.replace('checkout.html'); } }
 
-  document.getElementById('grid').innerHTML = PRODUCTS.map(p => `
+  document.getElementById('grid').innerHTML = PRODUCTS.filter(p => !p.hidden).map(p => `
     <article class="card">
       <figure><img src="${p.image}" srcset="${p.image800} 800w, ${p.image} 1312w" sizes="(max-width:700px) 90vw, 33vw" alt="${p.alt}"></figure>
       <h2>${p.name}</h2>
