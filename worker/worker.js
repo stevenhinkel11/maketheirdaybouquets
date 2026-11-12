@@ -136,7 +136,7 @@ export async function createPaymentLink(env, o) {
   for (const it of o.items) {
     const p = PRODUCTS[it.id]; const vid = await variationIdFor(env, p);
     lineItems.push(vid ? { catalog_object_id: vid, quantity: String(it.qty) }
-                       : { name: p.name + " (deliver " + shortDate(o.deliveryDate) + " · " + o.recipient.city + ")", quantity: String(it.qty), base_price_money: { amount: p.price, currency: "USD" } });
+                       : { name: p.name + " (deliver " + shortDate(o.deliveryDate) + " to " + o.recipient.address1.replace(/[()]/g, " ") + ", " + o.recipient.city + ")", quantity: String(it.qty), base_price_money: { amount: p.price, currency: "USD" } });
   }
   const useCatalog = lineItems.length > 0 && lineItems.every(l => l.catalog_object_id);
   const addr = { address_line_1: o.recipient.address1, address_line_2: o.recipient.address2 || undefined, locality: o.recipient.city, administrative_district_level_1: "CA", postal_code: o.recipient.zip, country: "US" };
