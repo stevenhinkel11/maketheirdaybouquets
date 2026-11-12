@@ -164,8 +164,9 @@ async function createPaymentLink(env, o) {
   const { ok, j } = await sq(env, "/v2/online-checkout/payment-links", {
     idempotency_key: crypto.randomUUID(),
     order,
-    checkout_options: { redirect_url: (env.SITE_URL || "https://maketheirdaybouquets.com") + "/order-complete.html", ask_for_shipping_address: false, allow_tipping: false },
-    pre_populated_data: { buyer_email: o.customer.email, buyer_phone_number: o.customer.phone }
+    // Note: Square rejects pre_populated_data.buyer_email together with a fulfillment, so the buyer's email is carried
+    // on the delivery recipient (email_address above), which is also where Square sends the receipt.
+    checkout_options: { redirect_url: (env.SITE_URL || "https://maketheirdaybouquets.com") + "/order-complete.html", ask_for_shipping_address: false, allow_tipping: false }
   });
   if (!ok || !j.payment_link) {
     console.log("Square error", JSON.stringify(j));

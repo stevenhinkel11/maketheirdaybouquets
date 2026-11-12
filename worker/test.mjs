@@ -60,6 +60,8 @@ t('deliver_at has PT offset', pl.order.fulfillments[0].delivery_details.deliver_
 t('address in CA with zip', pl.order.fulfillments[0].delivery_details.recipient.address.postal_code === '95060' && pl.order.fulfillments[0].delivery_details.recipient.address.administrative_district_level_1 === 'CA');
 t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].delivery_details.note));
 t('location set', pl.order.location_id === 'LOC1');
+t('no buyer_email alongside fulfillment (Square rejects it)', !pl.pre_populated_data);
+t('customer email on fulfillment recipient for receipt', pl.order.fulfillments[0].delivery_details.recipient.email_address === 'sam@example.com');
 // strict: no tax configured -> refuse rather than undercharge (fresh module state needs a new tax cache, so use a new env path)
 let threw = false;
 {
