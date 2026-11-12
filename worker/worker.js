@@ -185,9 +185,11 @@ export async function createPaymentLink(env, o) {
     order,
     checkout_options: { redirect_url: (env.SITE_URL || "https://maketheirdaybouquets.com") + "/order-complete.html", ask_for_shipping_address: false, allow_tipping: false }
   };
-  // Pre-fill the buyer's email so Square doesn't ask for it again. Square once rejected buyer_email together with a
+  // Pre-fill the buyer's email and phone so Square doesn't ask again (works when FULFILLMENT_MODE=none; with a shipment, Square shows the recipient's info instead). Square once rejected buyer_email together with a
   // fulfillment, so if it reports CONFLICTING_PARAMETERS we retry without it (the buyer then types it on Square's page).
-  let res = await sq(env, "/v2/online-checkout/payment-links", { ...linkBody, pre_populated_data: { buyer_email: o.customer.email } });
+  const pre = { buyer_email: o.customer.email };
+  if (o.customer.phone) pre.buyer_phone_number = o.customer.phone;
+  let res = await sq(env, "/v2/online-checkout/payment-links", { ...linkBody, pre_populated_data: pre });
   if (!res.ok && JSON.stringify(res.j).includes("CONFLICTING_PARAMETERS")) {
     console.log("buyer_email conflicts with fulfillment; retrying without it");
     res = await sq(env, "/v2/online-checkout/payment-links", { ...linkBody, idempotency_key: crypto.randomUUID() });

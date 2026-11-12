@@ -63,6 +63,7 @@ t('address in CA with zip', pl.order.fulfillments[0].shipment_details.recipient.
 t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].shipment_details.shipping_note));
 t('location set', pl.order.location_id === 'LOC1');
 t('buyer email is pre-filled so Square does not ask again', pl.pre_populated_data && pl.pre_populated_data.buyer_email === 'sam@example.com');
+t('buyer phone is pre-filled when given', !pl.pre_populated_data.buyer_phone_number || /^\+1\d{10}$/.test(pl.pre_populated_data.buyer_phone_number));
 t('buyer email NOT sent as recipient email', pl.order.fulfillments[0].shipment_details.recipient.email_address === undefined);
 t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@example.com/.test(pl.order.fulfillments[0].shipment_details.shipping_note));
 // optional fields empty -> no empty metadata values (Square rejects them)
