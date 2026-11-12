@@ -52,11 +52,12 @@
   .hero h1{font:italic 400 clamp(52px,12vw,180px)/.92 'Playfair Display',Georgia,serif}
   .hero p{margin-top:28px;line-height:2;font:500 12px 'Work Sans',system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase}
 
-  .quad{display:grid;grid-template-columns:repeat(2,1fr);max-width:900px;margin:0 auto;gap:clamp(10px,1.6vw,22px);padding:clamp(40px,6vw,90px) var(--gutter) 0;align-items:start}
+  .quad{display:grid;grid-template-columns:repeat(3,1fr);max-width:1200px;margin:0 auto;gap:clamp(10px,1.6vw,22px);padding:clamp(40px,6vw,90px) var(--gutter) 0;align-items:start}
   .quad figure{aspect-ratio:3/4;overflow:hidden;background:var(--paper)}
   .quad .cell{margin-top:clamp(30px,5vw,80px);text-align:center}
   .quad .cell figure{margin:0;text-align:left}
-  @media(max-width:720px){.quad .cell{margin-top:30px}}
+  .quad > figure:nth-child(3){margin-top:clamp(15px,2.5vw,40px)}
+  @media(max-width:720px){.quad{grid-template-columns:1fr 1fr}.quad .cell{margin-top:30px}.quad > figure:nth-child(3){grid-column:1/-1;margin-top:0;aspect-ratio:4/3}}
   .quad img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
   .quad figure:hover img{transform:scale(1.04)}
   
@@ -182,6 +183,7 @@
     <figure><img src="assets/img/lavender-magenta.jpg" srcset="assets/img/800/lavender-magenta.jpg 800w, assets/img/1200/lavender-magenta.jpg 1200w, assets/img/lavender-magenta.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Lavender roses, magenta blooms and white daisies in a glass vase"></figure>
     <button type="button" class="btn solid small" data-square style="display:none">Order Now</button>
   </div>
+  <figure class="rv"><img src="assets/img/purple-orange-bouquets.jpg" srcset="assets/img/800/purple-orange-bouquets.jpg 800w, assets/img/1200/purple-orange-bouquets.jpg 1200w, assets/img/purple-orange-bouquets.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Four kraft-wrapped bouquets of purple chrysanthemums, orange roses and blue thistle in white vases"></figure>
 </section>
 
 <section class="trio pair2 flowers1">
