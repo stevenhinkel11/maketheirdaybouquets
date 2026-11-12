@@ -56,14 +56,14 @@ t('embed (long) url returned', res.embedUrl === 'https://checkout.square.site/me
 t('uses sandbox host', calls[0].url.startsWith('https://connect.squareupsandbox.com'));
 t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Luxury Bouquet');
 t('square tax attached', pl.order.taxes && pl.order.taxes[0].catalog_object_id === 'TAXID');
-t('delivery fulfillment scheduled', pl.order.fulfillments[0].type === 'DELIVERY' && pl.order.fulfillments[0].delivery_details.schedule_type === 'SCHEDULED');
-t('deliver_at has PT offset', pl.order.fulfillments[0].delivery_details.deliver_at === '2026-11-14T12:00:00-08:00');
-t('address in CA with zip', pl.order.fulfillments[0].delivery_details.recipient.address.postal_code === '95060' && pl.order.fulfillments[0].delivery_details.recipient.address.administrative_district_level_1 === 'CA');
-t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].delivery_details.note));
+t('default fulfillment is a shipment to the recipient', pl.order.fulfillments[0].type === 'SHIPMENT' && pl.order.fulfillments[0].shipment_details.recipient.display_name === 'Pat');
+t('due time has PT offset', pl.order.fulfillments[0].shipment_details.expected_shipped_at === '2026-11-14T12:00:00-08:00');
+t('address in CA with zip', pl.order.fulfillments[0].shipment_details.recipient.address.postal_code === '95060' && pl.order.fulfillments[0].shipment_details.recipient.address.administrative_district_level_1 === 'CA');
+t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].shipment_details.shipping_note));
 t('location set', pl.order.location_id === 'LOC1');
 t('no buyer_email alongside fulfillment (Square rejects it)', !pl.pre_populated_data);
-t('buyer email NOT sent as recipient email', pl.order.fulfillments[0].delivery_details.recipient.email_address === undefined);
-t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@example.com/.test(pl.order.fulfillments[0].delivery_details.note));
+t('buyer email NOT sent as recipient email', pl.order.fulfillments[0].shipment_details.recipient.email_address === undefined);
+t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@example.com/.test(pl.order.fulfillments[0].shipment_details.shipping_note));
 // optional fields empty -> no empty metadata values (Square rejects them)
 {
   calls.length = 0; mockSquare([{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusion_type: 'ADDITIVE' } }]);

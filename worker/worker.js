@@ -142,8 +142,9 @@ export async function createPaymentLink(env, o) {
   const addr = { address_line_1: o.recipient.address1, address_line_2: o.recipient.address2 || undefined, locality: o.recipient.city, administrative_district_level_1: "CA", postal_code: o.recipient.zip, country: "US" };
   const deliverAt = o.deliveryDate + "T12:00:00" + ptOffset(o.deliveryDate);
   const recip = { display_name: o.recipient.name, phone_number: o.recipient.phone, address: addr };
-  // FULFILLMENT_MODE (Worker variable) lets us diagnose how Square accepts the order: "delivery" (default), "shipment", or "none".
-  const mode = (env.FULFILLMENT_MODE || "delivery").toLowerCase();
+  // Square payment links reject a DELIVERY fulfillment at payment time, so the default is "shipment" (shows as a proper
+  // shipment in Square, with Ship-to address and due date). FULFILLMENT_MODE can be set to "none" as a fallback.
+  const mode = (env.FULFILLMENT_MODE || "shipment").toLowerCase();
   const order = {
     location_id: env.SQUARE_LOCATION_ID,
     reference_id: ("MTD-" + o.deliveryDate).slice(0, 40),
