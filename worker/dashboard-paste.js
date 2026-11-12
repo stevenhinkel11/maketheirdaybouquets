@@ -16,12 +16,12 @@ const PRODUCTS = {
   "signature-arrangement": { name: "Signature Arrangement", price: 10000 },
   "deluxe-arrangement":   { name: "Deluxe Arrangement",   price: 15000 },   // listed as "$150+" on the site
   "sunset-soiree": { name: "Sunset Soirée", price: 15000 },
-  "harvest-hues-hand-wrapped": { name: "Harvest Hues, Hand Wrapped", price: 7500 },
+  "golden-hour-hand-wrapped": { name: "Golden Hour, Hand Wrapped", price: 7500 },
   "autumn-jewel": { name: "Autumn Jewel", price: 5500 },
   "lavender-love-vase": { name: "Lavender Love, Vase", price: 10000 },
   "lavender-love-hand-wrapped": { name: "Lavender Love, Hand Wrapped", price: 7500 },
   "rustic-romance": { name: "Rustic Romance", price: 5500 },
-  "harvest-hues-vase": { name: "Harvest Hues, Vase", price: 10000 },
+  "golden-hour-vase": { name: "Golden Hour, Vase", price: 10000 },
   "test-bouquet": { name: "Test Bouquet ($1 test)", price: 100 }   // TEMPORARY: live end-to-end test, remove afterwards
 };
 
