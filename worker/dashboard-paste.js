@@ -146,7 +146,7 @@ async function createPaymentLink(env, o) {
     fulfillments: [{
       type: "DELIVERY", state: "PROPOSED",
       delivery_details: {
-        recipient: { display_name: o.recipient.name, phone_number: o.recipient.phone, email_address: o.customer.email,
+        recipient: { display_name: o.recipient.name, phone_number: o.recipient.phone,
           address: { address_line_1: o.recipient.address1, address_line_2: o.recipient.address2 || undefined, locality: o.recipient.city, administrative_district_level_1: "CA", postal_code: o.recipient.zip, country: "US" } },
         schedule_type: "SCHEDULED",
         deliver_at: o.deliveryDate + "T12:00:00" + ptOffset(o.deliveryDate),
@@ -169,15 +169,16 @@ async function createPaymentLink(env, o) {
   const { ok, j } = await sq(env, "/v2/online-checkout/payment-links", {
     idempotency_key: crypto.randomUUID(),
     order,
-    // Note: Square rejects pre_populated_data.buyer_email together with a fulfillment, so the buyer's email is carried
-    // on the delivery recipient (email_address above), which is also where Square sends the receipt.
+    // Square rejects pre_populated_data.buyer_email together with a fulfillment, and the delivery recipient may be
+    // someone else, so we send NO email to Square here: Square's checkout asks the buyer for their own email
+    // (for the receipt). The buyer's name/phone/email are recorded in the delivery note instead.
     checkout_options: { redirect_url: (env.SITE_URL || "https://maketheirdaybouquets.com") + "/order-complete.html", ask_for_shipping_address: false, allow_tipping: false }
   });
   if (!ok || !j.payment_link) {
     console.log("Square error", JSON.stringify(j));
     const e = new Error("square"); e.detail = (j.errors || []).map(x => [x.category, x.code, x.field, x.detail].filter(Boolean).join(" · ")).join(" | ") || "no details"; throw e;
   }
-  return { url: j.payment_link.url, usedCatalog: useCatalog };
+  return { url: j.payment_link.url, embedUrl: j.payment_link.long_url || "", usedCatalog: useCatalog };
 }
 
 /* ---------- HTTP ---------- */
@@ -197,7 +198,7 @@ export default {
     if (req.method !== "POST" || path !== "/checkout") return json({ error: "Not found." }, 404, h);
     let body; try { body = await req.json(); } catch (_) { return json({ error: "Invalid request." }, 400, h); }
     const v = validateOrder(body); if (v.error) return json({ error: v.error }, 400, h);
-    try { const { url } = await createPaymentLink(env, v.order); return json({ url }, 200, h); }
+    try { const { url, embedUrl } = await createPaymentLink(env, v.order); return json({ url, embedUrl }, 200, h); }
     catch (e) { return json({ error: "We couldn't start checkout right now. Please try again, or contact us.", detail: env.SQUARE_ENV === "sandbox" ? (e.detail || String(e.message || e)) : undefined }, 502, h); }
   }
 };

@@ -42,7 +42,7 @@ function mockSquare(taxes) {
     const body = JSON.parse(init.body); calls.push({ url, body });
     let j = {};
     if (url.endsWith('/v2/catalog/search')) j = { objects: taxes };
-    if (url.endsWith('/v2/online-checkout/payment-links')) j = { payment_link: { url: 'https://square.link/test' } };
+    if (url.endsWith('/v2/online-checkout/payment-links')) j = { payment_link: { url: 'https://square.link/test', long_url: 'https://checkout.square.site/merchant/M/checkout/X' } };
     return { ok: true, json: async () => j };
   };
 }
@@ -52,6 +52,7 @@ mockSquare([{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusi
 const res = await createPaymentLink(env, good);
 const pl = calls.find(c => c.url.includes('payment-links')).body;
 t('payment link url returned', res.url === 'https://square.link/test');
+t('embed (long) url returned', res.embedUrl === 'https://checkout.square.site/merchant/M/checkout/X');
 t('uses sandbox host', calls[0].url.startsWith('https://connect.squareupsandbox.com'));
 t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Luxury Bouquet');
 t('square tax attached', pl.order.taxes && pl.order.taxes[0].catalog_object_id === 'TAXID');
@@ -61,7 +62,8 @@ t('address in CA with zip', pl.order.fulfillments[0].delivery_details.recipient.
 t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].delivery_details.note));
 t('location set', pl.order.location_id === 'LOC1');
 t('no buyer_email alongside fulfillment (Square rejects it)', !pl.pre_populated_data);
-t('customer email on fulfillment recipient for receipt', pl.order.fulfillments[0].delivery_details.recipient.email_address === 'sam@example.com');
+t('buyer email NOT sent as recipient email', pl.order.fulfillments[0].delivery_details.recipient.email_address === undefined);
+t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@example.com/.test(pl.order.fulfillments[0].delivery_details.note));
 // optional fields empty -> no empty metadata values (Square rejects them)
 {
   calls.length = 0; mockSquare([{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusion_type: 'ADDITIVE' } }]);

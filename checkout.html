@@ -97,6 +97,11 @@
   <span><a href="privacy.html">Privacy</a></span>
 </footer>
 
+<dialog id="pay-modal" aria-label="Secure payment">
+  <div class="bar"><span>Secure payment · powered by Square</span><span><a id="pay-new" href="#" target="_blank" rel="noopener">Open in new tab ↗</a> &nbsp; <button type="button" id="pay-close">Close ✕</button></span></div>
+  <iframe id="pay-frame" title="Square secure checkout" allow="payment"></iframe>
+</dialog>
+
 <script src="js/shop.js"></script>
 <script>
   const { Cart, money, find, ZIPS, zipCity, dateProblem, earliestDate, latestDate, CHECKOUT_API } = MTD;
@@ -155,6 +160,10 @@
   zipEl.addEventListener('input', () => { zipEl.value = zipEl.value.replace(/\D/g, '').slice(0, 5); refresh(); });
   refresh();
 
+  $('pay-close').onclick = () => $('pay-modal').close();
+  $('pay-modal').addEventListener('click', e => { if (e.target === $('pay-modal')) $('pay-modal').close(); });
+  $('pay-modal').addEventListener('close', () => { $('pay-frame').removeAttribute('src'); });
+
   $('f').addEventListener('submit', async e => {
     e.preventDefault();
     const err = $('err'); err.classList.remove('show');
@@ -173,7 +182,12 @@
       const r = await fetch(CHECKOUT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok || !j.url) throw new Error((j.error || 'Something went wrong. Please try again.') + (j.detail ? ' [Test mode detail: ' + j.detail + ']' : ''));
-      location.href = j.url;
+      if (j.embedUrl) {
+        // Show Square's secure checkout inside our page so the customer never leaves the site.
+        const m = $('pay-modal'), fr = $('pay-frame');
+        fr.src = j.embedUrl; $('pay-new').href = j.url; m.showModal();
+        pay.disabled = false; pay.textContent = 'Continue to payment';
+      } else { location.href = j.url; }
     } catch (ex) {
       err.textContent = ex.message; err.classList.add('show');
       pay.disabled = false; pay.textContent = 'Continue to payment'; refresh();

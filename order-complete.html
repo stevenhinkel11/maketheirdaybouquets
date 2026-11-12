@@ -31,6 +31,8 @@
 <script src="js/shop.js"></script>
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
+  // If Square returned us inside the payment pop-up, show this thank-you page full-screen instead.
+  if (window.top !== window.self) { try { window.top.location.replace(window.location.href); } catch (_) {} }
   MTD.Cart.clear();
   if (window.gtag) gtag('event', 'purchase_complete');
 </script>

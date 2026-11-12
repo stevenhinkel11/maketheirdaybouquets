@@ -78,3 +78,12 @@ input.bad{border-color:#a3341f}
 label.same{display:flex;align-items:center;gap:10px;font-weight:400;font-size:16px;letter-spacing:0;text-transform:none;cursor:pointer}
 label.same input{accent-color:var(--marigold);width:18px;height:18px}
 input[readonly]{background:#f1ebdf;color:#5d584d}
+
+/* embedded payment modal */
+#pay-modal{border:0;border-radius:6px;padding:0;width:min(560px,96vw);height:min(92vh,860px);background:var(--cream);margin:auto;overflow:hidden}
+#pay-modal[open]{display:flex;flex-direction:column}
+#pay-modal::backdrop{background:rgba(30,28,22,.6);backdrop-filter:blur(3px)}
+#pay-modal .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(43,42,38,.15);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+#pay-modal .bar a{color:var(--muted);text-decoration:none}#pay-modal .bar a:hover{color:var(--marigold-dk)}
+#pay-modal .bar button{background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;color:var(--ink);padding:6px}
+#pay-modal iframe{flex:1;width:100%;border:0;background:#fff}
