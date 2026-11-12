@@ -73,6 +73,15 @@ t('note still records buyer contact', /ORDERED BY: Sam, \+18315550100, sam@examp
   t('no empty metadata values when optional fields are blank', Object.values(md).every(v => String(v).length > 0));
   t('gift message optional (order validates without it)', !validateOrder(b, before).error);
 }
+// fulfillment modes
+for (const m of ['shipment', 'none']) {
+  calls.length = 0; mockSquare([{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusion_type: 'ADDITIVE' } }]);
+  await createPaymentLink({ ...env, FULFILLMENT_MODE: m }, good);
+  const o3 = calls.find(c => c.url.includes('payment-links')).body.order;
+  if (m === 'shipment') t('shipment mode builds SHIPMENT fulfillment', o3.fulfillments[0].type === 'SHIPMENT' && o3.fulfillments[0].shipment_details.recipient.address.postal_code === '95060');
+  else t('none mode has no fulfillment but keeps address in line item note', !o3.fulfillments && /95060/.test(o3.line_items[0].note) && /2026-11-14/.test(o3.line_items[0].note));
+  t(m + ' mode still has tax', !!(o3.taxes && o3.taxes[0]));
+}
 // strict: no tax configured -> refuse rather than undercharge (fresh module state needs a new tax cache, so use a new env path)
 let threw = false;
 {

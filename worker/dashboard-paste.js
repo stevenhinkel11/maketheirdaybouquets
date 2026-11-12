@@ -139,22 +139,26 @@ async function createPaymentLink(env, o) {
                        : { name: p.name, quantity: String(it.qty), base_price_money: { amount: p.price, currency: "USD" } });
   }
   const useCatalog = lineItems.length > 0 && lineItems.every(l => l.catalog_object_id);
+  const addr = { address_line_1: o.recipient.address1, address_line_2: o.recipient.address2 || undefined, locality: o.recipient.city, administrative_district_level_1: "CA", postal_code: o.recipient.zip, country: "US" };
+  const deliverAt = o.deliveryDate + "T12:00:00" + ptOffset(o.deliveryDate);
+  const recip = { display_name: o.recipient.name, phone_number: o.recipient.phone, address: addr };
+  // FULFILLMENT_MODE (Worker variable) lets us diagnose how Square accepts the order: "delivery" (default), "shipment", or "none".
+  const mode = (env.FULFILLMENT_MODE || "delivery").toLowerCase();
   const order = {
     location_id: env.SQUARE_LOCATION_ID,
     reference_id: ("MTD-" + o.deliveryDate).slice(0, 40),
     line_items: lineItems,
-    fulfillments: [{
-      type: "DELIVERY", state: "PROPOSED",
-      delivery_details: {
-        recipient: { display_name: o.recipient.name, phone_number: o.recipient.phone,
-          address: { address_line_1: o.recipient.address1, address_line_2: o.recipient.address2 || undefined, locality: o.recipient.city, administrative_district_level_1: "CA", postal_code: o.recipient.zip, country: "US" } },
-        schedule_type: "SCHEDULED",
-        deliver_at: o.deliveryDate + "T12:00:00" + ptOffset(o.deliveryDate),
-        note: buildNote(o)
-      }
-    }],
     metadata: { delivery_date: o.deliveryDate, recipient: o.recipient.name.slice(0, 120) }
   };
+  if (mode === "delivery") {
+    order.fulfillments = [{ type: "DELIVERY", state: "PROPOSED", delivery_details: { recipient: recip, schedule_type: "SCHEDULED", deliver_at: deliverAt, note: buildNote(o) } }];
+  } else if (mode === "shipment") {
+    order.fulfillments = [{ type: "SHIPMENT", state: "PROPOSED", shipment_details: { recipient: recip, shipping_note: buildNote(o), expected_shipped_at: deliverAt } }];
+  } else { // "none": keep everything in the line item note + metadata
+    const where = [o.recipient.name, o.recipient.phone, o.recipient.address1, o.recipient.address2, o.recipient.city + ", CA " + o.recipient.zip].filter(Boolean).join(", ");
+    for (const li of lineItems) li.note = ("DELIVER " + o.deliveryDate + " TO " + where + " | " + buildNote(o)).slice(0, 490);
+    order.metadata.address = (o.recipient.address1 + " " + (o.recipient.address2 || "") + ", " + o.recipient.city + " " + o.recipient.zip).slice(0, 250);
+  }
   // Square rejects empty metadata values, so only add the optional ones when they have text.
   if (o.giftMessage) order.metadata.gift_message = o.giftMessage.slice(0, 250);
   if (o.giftFrom) order.metadata.gift_from = o.giftFrom.slice(0, 60);
