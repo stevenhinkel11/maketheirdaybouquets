@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/shop.css?v=5">
+<link rel="stylesheet" href="css/shop.css?v=6">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2W7M2RE34"></script>
 <script>
@@ -36,7 +36,7 @@
 
   <div class="co" id="co">
     <form id="f" novalidate>
-      <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <input type="text" name="hp_x7" id="hp" tabindex="-1" autocomplete="off" data-lpignore="true" data-1p-ignore aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 
       <fieldset>
         <legend>Delivery date</legend>
@@ -84,7 +84,7 @@
       </fieldset>
 
       <p class="msg err" id="err" role="alert"></p>
-      <button class="btn" id="pay" type="submit" disabled>Continue to payment</button>
+      <button class="btn" id="pay" type="submit">Continue to payment</button>
       <p class="note">Your payment is processed securely by Square. We never see your card details.</p>
     </form>
 
@@ -102,7 +102,7 @@
   <iframe id="pay-frame" title="Square secure checkout" allow="payment"></iframe>
 </dialog>
 
-<script src="js/shop.js?v=5"></script>
+<script src="js/shop.js?v=6"></script>
 <script>
   const { Cart, money, find, ZIPS, zipCity, dateProblem, earliestDate, latestDate, CHECKOUT_API } = MTD;
   const $ = id => document.getElementById(id);
@@ -125,8 +125,9 @@
   dateEl.min = earliestDate(); dateEl.max = latestDate();
 
   const zipEl = $('zip'), zipMsg = $('zip-msg');
+  const zip5 = () => (zipEl.value.match(/\d{5}/) || [''])[0];
   function checkZip() {
-    const z = zipEl.value.trim();
+    const z = zip5();
     $('city').value = zipCity(z);
     zipEl.classList.remove('bad'); zipMsg.className = 'hint';
     if (z.length < 5) { zipMsg.textContent = 'We deliver free anywhere in Santa Cruz County, CA.'; return false; }
@@ -137,28 +138,37 @@
   }
   function checkDate() { const p = dateProblem(dateEl.value); $('date-msg').textContent = dateEl.value ? p : ''; return !p; }
 
-  const reqIds = ['rname', 'rphone', 'addr1', 'cname', 'cemail', 'cphone'];
   const phoneOk = v => v.replace(/\D/g, '').replace(/^1/, '').length === 10;
-  function allOk() {
-    const filled = reqIds.every(id => $(id).value.trim());
-    return filled && checkZip() && checkDate() && phoneOk($('rphone').value) && phoneOk($('cphone').value) && /^\S+@\S+\.\S+$/.test($('cemail').value.trim()) && Cart.get().length > 0;
+  // Everything that must be right before we create the Square checkout. Returns a list of {id, msg}.
+  function problems() {
+    const out = [], v = id => $(id).value.trim();
+    const dp = dateProblem(dateEl.value); if (dp) out.push({ id: 'date', msg: dp });
+    if (!v('rname')) out.push({ id: 'rname', msg: "Enter the recipient's name." });
+    if (!phoneOk($('rphone').value)) out.push({ id: 'rphone', msg: "Enter a 10-digit phone number for the recipient." });
+    if (!v('addr1')) out.push({ id: 'addr1', msg: 'Enter the delivery address.' });
+    if (!zip5()) out.push({ id: 'zip', msg: 'Enter the delivery ZIP code.' });
+    else if (!zipCity(zip5())) out.push({ id: 'zip', msg: 'Sorry, ' + zip5() + ' is outside our Santa Cruz County delivery area.' });
+    if (!v('cname')) out.push({ id: 'cname', msg: 'Enter your name.' });
+    if (!/^\S+@\S+\.\S+$/.test(v('cemail'))) out.push({ id: 'cemail', msg: 'Enter a valid email address.' });
+    if (!phoneOk($('cphone').value)) out.push({ id: 'cphone', msg: 'Enter a 10-digit phone number for you.' });
+    if (!Cart.get().length) out.push({ id: 'date', msg: 'Your cart is empty.' });
+    return out;
   }
-  const refresh = () => { $('pay').disabled = !allOk(); };
+  // Inline feedback for ZIP and date (these have their own messages). Listens to every event a phone might fire.
+  const live = () => { checkZip(); checkDate(); };
+  ['input', 'change', 'blur', 'keyup'].forEach(ev => { zipEl.addEventListener(ev, live); dateEl.addEventListener(ev, live); });
+  setInterval(() => { if (zipEl.value || dateEl.value) live(); }, 700); // catches autofill that fires no events
   // "Same as recipient": copy the recipient's name and phone into the customer's, and keep them in sync while checked.
-  function syncSame() {
-    if (!$('same').checked) return;
-    $('cname').value = $('rname').value; $('cphone').value = $('rphone').value;
-  }
+  function syncSame() { if ($('same').checked) { $('cname').value = $('rname').value; $('cphone').value = $('rphone').value; } }
   $('same').addEventListener('change', () => {
     const on = $('same').checked;
     $('cname').readOnly = on; $('cphone').readOnly = on;
-    if (on) syncSame(); refresh();
+    if (on) syncSame();
   });
-  $('rname').addEventListener('input', () => { syncSame(); refresh(); });
-  $('rphone').addEventListener('input', () => { syncSame(); refresh(); });
-  $('f').addEventListener('input', refresh); $('f').addEventListener('change', refresh);
-  zipEl.addEventListener('input', () => { zipEl.value = zipEl.value.replace(/\D/g, '').slice(0, 5); refresh(); });
-  refresh();
+  ['input', 'change', 'keyup', 'blur'].forEach(ev => { $('rname').addEventListener(ev, syncSame); $('rphone').addEventListener(ev, syncSame); });
+  $('f').addEventListener('input', e => e.target.classList && e.target.classList.remove('bad'));
+  zipEl.addEventListener('input', () => { zipEl.value = zipEl.value.replace(/[^\d-]/g, '').slice(0, 10); });
+  live();
 
   $('pay-close').onclick = () => $('pay-modal').close();
   $('pay-modal').addEventListener('click', e => { if (e.target === $('pay-modal')) $('pay-modal').close(); });
@@ -167,14 +177,22 @@
   $('f').addEventListener('submit', async e => {
     e.preventDefault();
     const err = $('err'); err.classList.remove('show');
-    if (!allOk()) { err.textContent = 'Please complete the required fields. Delivery must be to a Santa Cruz County ZIP code and a valid date.'; err.classList.add('show'); return; }
-    if ($('f').website.value) return;
+    syncSame(); live();
+    const probs = problems();
+    if (probs.length) {
+      err.innerHTML = '<strong>Almost there. Please fix:</strong><ul style="margin:8px 0 0 18px">' + probs.map(p => '<li>' + p.msg + '</li>').join('') + '</ul>';
+      err.classList.add('show');
+      probs.forEach(p => { const el = $(p.id); if (el) el.classList.add('bad'); });
+      const first = $(probs[0].id); if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); try { first.focus({ preventScroll: true }); } catch (_) {} }
+      return;
+    }
+    if ($('hp').value) { err.textContent = 'Something went wrong. Please refresh the page and try again.'; err.classList.add('show'); return; }
     if (!CHECKOUT_API) { err.textContent = "Online checkout isn't connected yet. Please use the Order Flowers form for now."; err.classList.add('show'); return; }
     const pay = $('pay'); pay.disabled = true; pay.textContent = 'Please wait…';
     const body = {
       items: Cart.get(),
       deliveryDate: dateEl.value,
-      recipient: { name: $('rname').value.trim(), phone: $('rphone').value.trim(), address1: $('addr1').value.trim(), address2: $('addr2').value.trim(), zip: zipEl.value.trim() },
+      recipient: { name: $('rname').value.trim(), phone: $('rphone').value.trim(), address1: $('addr1').value.trim(), address2: $('addr2').value.trim(), zip: zip5() },
       instructions: $('instr').value.trim(), giftMessage: $('msg').value.trim(), giftFrom: $('from').value.trim(),
       customer: { name: $('cname').value.trim(), email: $('cemail').value.trim(), phone: $('cphone').value.trim() }
     };
@@ -193,7 +211,7 @@
       } else { location.href = j.url; }
     } catch (ex) {
       err.textContent = ex.message; err.classList.add('show');
-      pay.disabled = false; pay.textContent = 'Continue to payment'; refresh();
+      pay.disabled = false; pay.textContent = 'Continue to payment';
     }
   });
 </script>
