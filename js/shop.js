@@ -20,6 +20,34 @@
       description: "Our most abundant, showstopping floral designs, artfully arranged in a vase or container.",
       image: "assets/img/lavender-magenta.jpg", image800: "assets/img/800/lavender-magenta.jpg", alt: "Lavender roses, magenta blooms and white daisies in a glass vase"
     },
+    {
+      id: "sunset-soiree", name: "Sunset Soirée", price: 15000,
+      description: "Exact flowers vary by season.", image: "assets/img/pink-bowl.jpg", image800: "assets/img/800/pink-bowl.jpg", alt: "Pink and orange arrangement in a white bowl"
+    },
+    {
+      id: "harvest-hues-hand-wrapped", name: "Harvest Hues, Hand Wrapped", price: 7500,
+      description: "Exact flowers vary by season.", image: "assets/img/7166.jpg", image800: "assets/img/800/7166.jpg", alt: "Hand-wrapped bouquet of peach roses and daisies"
+    },
+    {
+      id: "autumn-jewel", name: "Autumn Jewel", price: 5500,
+      description: "Exact flowers vary by season.", image: "assets/img/purple-orange-bouquets.jpg", image800: "assets/img/800/purple-orange-bouquets.jpg", alt: "Purple and orange bouquets"
+    },
+    {
+      id: "lavender-love-vase", name: "Lavender Love, Vase", price: 10000,
+      description: "Exact flowers vary by season.", image: "assets/img/lavender-magenta.jpg", image800: "assets/img/800/lavender-magenta.jpg", alt: "Lavender roses and magenta blooms in a glass vase"
+    },
+    {
+      id: "lavender-love-hand-wrapped", name: "Lavender Love, Hand Wrapped", price: 7500,
+      description: "Exact flowers vary by season.", image: "assets/img/pink-white-bouquet.jpg", image800: "assets/img/800/pink-white-bouquet.jpg", alt: "Hand-wrapped bouquet of lavender roses and chrysanthemums"
+    },
+    {
+      id: "rustic-romance", name: "Rustic Romance", price: 5500,
+      description: "Exact flowers vary by season.", image: "assets/img/wildflower-deck.jpg", image800: "assets/img/800/wildflower-deck.jpg", alt: "Kraft-wrapped wildflower bouquet"
+    },
+    {
+      id: "harvest-hues-vase", name: "Harvest Hues, Vase", price: 10000,
+      description: "Exact flowers vary by season.", image: "assets/img/7165.jpg", image800: "assets/img/800/7165.jpg", alt: "Pink gerbera and yellow roses in a bowl"
+    },
     { // TEMPORARY hidden $1 product for a live end-to-end test. Not shown on the site.
       id: "test-bouquet", name: "Test Bouquet ($1 test)", price: 100, hidden: true,
       description: "Live checkout test.", image: "assets/img/pink-bowl.jpg", image800: "assets/img/800/pink-bowl.jpg", alt: ""

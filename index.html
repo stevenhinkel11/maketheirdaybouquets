@@ -102,6 +102,13 @@
   .quad + .trio{margin-top:clamp(70px,10vw,140px)}
   .intro + .pumpkins{margin-top:0}
   @media(min-width:721px){.trio.flowers1{grid-template-columns:repeat(3,1fr);max-width:1200px}}
+  .pname{font:italic 500 clamp(22px,2.4vw,28px)/1.15 var(--serif);margin-top:16px}
+  .pprice{font:500 15px var(--sans);letter-spacing:.06em;color:var(--marigold-dk);margin-top:4px}
+  .trio.flowers1 > :nth-child(2){margin-top:clamp(40px,9vw,140px)}
+  .trio.flowers1 > :nth-child(3){margin-top:clamp(20px,4.5vw,70px)}
+  .trio.more > :nth-child(2){margin-top:clamp(40px,9vw,140px)}
+  @media(max-width:720px){.trio.flowers1 > :nth-child(2){margin-top:40px}.trio.flowers1 > :nth-child(3){grid-column:1/-1;margin-top:0}.trio.flowers1 > :nth-child(3) figure{aspect-ratio:4/3}}
+  .flowernote{text-align:center;margin-top:28px;font-size:14px;color:var(--muted);padding:0 var(--gutter)}
   .trio.single{margin-top:clamp(70px,10vw,140px);max-width:440px}
   .pumpkins + .trio{margin-top:clamp(70px,10vw,140px)}
 
@@ -252,21 +259,55 @@
 <section class="quad">
   <div class="cell rv">
     <figure><img data-n="2" src="assets/img/pink-bowl.jpg" srcset="assets/img/800/pink-bowl.jpg 800w, assets/img/1200/pink-bowl.jpg 1200w, assets/img/pink-bowl.jpg 1312w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Hot pink and orange roses, cosmos, marigold and gerbera daisies in a white bowl"></figure>
-    <a class="btn solid small" href="order.html">Order Flowers</a>
+    <div class="pname">Sunset Soirée</div>
+    <div class="pprice">$150*</div>
+    <button type="button" class="btn solid small" data-add="sunset-soiree">Order Now</button>
   </div>
-  <figure class="rv"><img data-n="5" src="assets/img/7166.jpg" srcset="assets/img/800/7166.jpg 800w, assets/img/1200/7166.jpg 1200w, assets/img/7166.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Overhead view of a bouquet with peach roses and daisies"></figure>
+  <div class="cell rv">
+    <figure><img data-n="3" src="assets/img/7166.jpg" srcset="assets/img/800/7166.jpg 800w, assets/img/1200/7166.jpg 1200w, assets/img/7166.jpg 1600w" sizes="(max-width:720px) 50vw, 40vw" loading="lazy" alt="Overhead view of a bouquet with peach roses and daisies"></figure>
+    <div class="pname">Harvest Hues, Hand Wrapped</div>
+    <div class="pprice">$75*</div>
+    <button type="button" class="btn solid small" data-add="harvest-hues-hand-wrapped">Order Now</button>
+  </div>
 </section>
 
 <section class="trio pair2 flowers1">
-  <figure class="rv"><img data-n="4" src="assets/img/purple-orange-bouquets.jpg" srcset="assets/img/800/purple-orange-bouquets.jpg 800w, assets/img/1200/purple-orange-bouquets.jpg 1200w, assets/img/purple-orange-bouquets.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Four kraft-wrapped bouquets of purple chrysanthemums, orange roses and blue thistle in white vases"></figure>
-  <figure class="rv"><img data-n="3" src="assets/img/lavender-magenta.jpg" srcset="assets/img/800/lavender-magenta.jpg 800w, assets/img/1200/lavender-magenta.jpg 1200w, assets/img/lavender-magenta.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Lavender roses, magenta blooms and white daisies in a glass vase"></figure>
-  <figure class="rv"><img data-n="6" src="assets/img/pink-white-bouquet.jpg" srcset="assets/img/800/pink-white-bouquet.jpg 800w, assets/img/1200/pink-white-bouquet.jpg 1200w, assets/img/pink-white-bouquet.jpg 1600w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Close-up of a bouquet of lavender roses, magenta chrysanthemums, white blooms and pink daisies with eucalyptus"></figure>
+  <div class="cell rv">
+    <figure><img data-n="4" src="assets/img/purple-orange-bouquets.jpg" srcset="assets/img/800/purple-orange-bouquets.jpg 800w, assets/img/1200/purple-orange-bouquets.jpg 1200w, assets/img/purple-orange-bouquets.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Four kraft-wrapped bouquets of purple chrysanthemums, orange roses and blue thistle in white vases"></figure>
+    <div class="pname">Autumn Jewel</div>
+    <div class="pprice">$55*</div>
+    <button type="button" class="btn solid small" data-add="autumn-jewel">Order Now</button>
+  </div>
+  <div class="cell rv">
+    <figure><img data-n="5" src="assets/img/lavender-magenta.jpg" srcset="assets/img/800/lavender-magenta.jpg 800w, assets/img/1200/lavender-magenta.jpg 1200w, assets/img/lavender-magenta.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Lavender roses, magenta blooms and white daisies in a glass vase"></figure>
+    <div class="pname">Lavender Love, Vase</div>
+    <div class="pprice">$100*</div>
+    <button type="button" class="btn solid small" data-add="lavender-love-vase">Order Now</button>
+  </div>
+  <div class="cell rv">
+    <figure><img data-n="6" src="assets/img/pink-white-bouquet.jpg" srcset="assets/img/800/pink-white-bouquet.jpg 800w, assets/img/1200/pink-white-bouquet.jpg 1200w, assets/img/pink-white-bouquet.jpg 1600w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Close-up of a bouquet of lavender roses, magenta chrysanthemums, white blooms and pink daisies with eucalyptus"></figure>
+    <div class="pname">Lavender Love, Hand Wrapped</div>
+    <div class="pprice">$75*</div>
+    <button type="button" class="btn solid small" data-add="lavender-love-hand-wrapped">Order Now</button>
+  </div>
 </section>
 
 <section class="trio more">
-  <figure class="rv"><img data-n="7" src="assets/img/wildflower-deck.jpg" srcset="assets/img/800/wildflower-deck.jpg 800w, assets/img/1200/wildflower-deck.jpg 1200w, assets/img/wildflower-deck.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Hand-held bouquet wrapped in kraft paper with a sage ribbon"></figure>
-  <figure class="rv"><img data-n="8" src="assets/img/7165.jpg" srcset="assets/img/800/7165.jpg 800w, assets/img/1200/7165.jpg 1200w, assets/img/7165.jpg 1600w" sizes="(max-width:720px) 50vw, 450px" loading="lazy" alt="Pink gerbera and yellow roses in a bowl by a sunlit window"></figure>
+  <div class="cell rv">
+    <figure><img data-n="7" src="assets/img/wildflower-deck.jpg" srcset="assets/img/800/wildflower-deck.jpg 800w, assets/img/1200/wildflower-deck.jpg 1200w, assets/img/wildflower-deck.jpg 1086w" sizes="(max-width:720px) 50vw, 33vw" loading="lazy" alt="Hand-held bouquet wrapped in kraft paper with a sage ribbon"></figure>
+    <div class="pname">Rustic Romance</div>
+    <div class="pprice">$55*</div>
+    <button type="button" class="btn solid small" data-add="rustic-romance">Order Now</button>
+  </div>
+  <div class="cell rv">
+    <figure><img data-n="8" src="assets/img/7165.jpg" srcset="assets/img/800/7165.jpg 800w, assets/img/1200/7165.jpg 1200w, assets/img/7165.jpg 1600w" sizes="(max-width:720px) 50vw, 450px" loading="lazy" alt="Pink gerbera and yellow roses in a bowl by a sunlit window"></figure>
+    <div class="pname">Harvest Hues, Vase</div>
+    <div class="pprice">$100*</div>
+    <button type="button" class="btn solid small" data-add="harvest-hues-vase">Order Now</button>
+  </div>
 </section>
+
+<p class="flowernote">*Exact flowers vary by season.</p>
 
 <section class="intro">
   <p class="rv">Bouquets made with care <em>for the people you love</em></p>
@@ -316,7 +357,7 @@
   <div class="ft" id="mtd-ft"></div>
 </aside>
 
-<script src="js/shop.js?v=7"></script>
+<script src="js/shop.js?v=8"></script>
 <script>
   document.getElementById('yr').textContent=new Date().getFullYear();
   // Photo numbers: add ?numbers to the address to show a number on every photo
