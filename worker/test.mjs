@@ -54,7 +54,7 @@ const pl = calls.find(c => c.url.includes('payment-links')).body;
 t('payment link url returned', res.url === 'https://square.link/test');
 t('embed (long) url returned', res.embedUrl === 'https://checkout.square.site/merchant/M/checkout/X');
 t('uses sandbox host', calls[0].url.startsWith('https://connect.squareupsandbox.com'));
-t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Luxury Bouquet');
+t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Luxury Bouquet (deliver Sat, Nov 14 · Santa Cruz)');
 t('square tax attached', pl.order.taxes && pl.order.taxes[0].catalog_object_id === 'TAXID');
 t('default fulfillment is a shipment to the recipient', pl.order.fulfillments[0].type === 'SHIPMENT' && pl.order.fulfillments[0].shipment_details.recipient.display_name === 'Pat');
 t('due time has PT offset', pl.order.fulfillments[0].shipment_details.expected_shipped_at === '2026-11-14T12:00:00-08:00');
@@ -104,6 +104,7 @@ for (const m of ['shipment', 'none']) {
   const min = buildEmail({ id: 'X', line_items: [], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null);
   t('email builds with minimal data (no crash)', /Total paid: \$1\.00/.test(min.text));
   const ce = buildCustomerEmail(order, null);
+  t('emails strip the delivery suffix from item names', buildEmail({ id: 'X', line_items: [{ name: 'Luxury Bouquet (deliver Sat, Nov 14 · Santa Cruz)', quantity: '1', total_money: { amount: 100 } }], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).text.includes('Luxury Bouquet x 1') && !/deliver Sat/.test(buildEmail({ id: 'X', line_items: [{ name: 'Luxury Bouquet (deliver Sat, Nov 14 · Santa Cruz)', quantity: '1', total_money: { amount: 100 } }], metadata: { delivery_date: '2026-11-14' }, total_money: { amount: 100 } }, null).html.replace(/Sat, Nov 14<\/title>/g,'').split('Order')[1] || ''));
   t('customer subject has date', /^Your order is confirmed · delivery Sat, Nov 14/.test(ce.subject));
   t('customer email greets by first name', /Thank you, Sam!/.test(ce.html) && /Thank you, Sam!/.test(ce.text));
   t('customer email has delivery, message and total', /1 Main St, Apt 2/.test(ce.html) && /Happy birthday &amp; many more!/.test(ce.html) && /\$109\.50/.test(ce.html) && /Delivery<\/td><td[^>]*>Free/.test(ce.html));

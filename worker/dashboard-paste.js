@@ -136,7 +136,7 @@ async function createPaymentLink(env, o) {
   for (const it of o.items) {
     const p = PRODUCTS[it.id]; const vid = await variationIdFor(env, p);
     lineItems.push(vid ? { catalog_object_id: vid, quantity: String(it.qty) }
-                       : { name: p.name, quantity: String(it.qty), base_price_money: { amount: p.price, currency: "USD" } });
+                       : { name: p.name + " (deliver " + shortDate(o.deliveryDate) + " · " + o.recipient.city + ")", quantity: String(it.qty), base_price_money: { amount: p.price, currency: "USD" } });
   }
   const useCatalog = lineItems.length > 0 && lineItems.every(l => l.catalog_object_id);
   const addr = { address_line_1: o.recipient.address1, address_line_2: o.recipient.address2 || undefined, locality: o.recipient.city, administrative_district_level_1: "CA", postal_code: o.recipient.zip, country: "US" };
@@ -198,7 +198,7 @@ const shortDate = ymd => /^\d{4}-\d{2}-\d{2}$/.test(ymd || "") ? new Intl.DateTi
 /** Builds the owner's new-order email from a Square order (+ optional payment). Pure, so it is unit-tested. */
 function buildEmail(order, payment) {
   const m = order.metadata || {};
-  const items = (order.line_items || []).map(li => ({ name: li.name || "Item", qty: li.quantity || "1", total: li.total_money && li.total_money.amount }));
+  const items = (order.line_items || []).map(li => ({ name: (li.name || "Item").replace(/ \(deliver [^)]*\)$/, ""), qty: li.quantity || "1", total: li.total_money && li.total_money.amount }));
   const subtotal = (order.line_items || []).reduce((a, li) => a + ((li.gross_sales_money && li.gross_sales_money.amount) || 0), 0);
   const tax = order.total_tax_money && order.total_tax_money.amount, total = order.total_money && order.total_money.amount;
   const city = (m.address || "").split(",").slice(-2, -1)[0] ? (m.address.split(",").slice(-2, -1)[0] || "").trim() : "";
@@ -256,7 +256,7 @@ ${receipt ? `<p style="margin-top:22px"><a href="${esc(receipt)}" style="color:#
 function buildCustomerEmail(order, payment) {
   const m = order.metadata || {};
   const first = (m.buyer_name || "").trim().split(/\s+/)[0] || "there";
-  const items = (order.line_items || []).map(li => ({ name: li.name || "Item", qty: li.quantity || "1", total: li.total_money && li.total_money.amount }));
+  const items = (order.line_items || []).map(li => ({ name: (li.name || "Item").replace(/ \(deliver [^)]*\)$/, ""), qty: li.quantity || "1", total: li.total_money && li.total_money.amount }));
   const subtotal = (order.line_items || []).reduce((a, li) => a + ((li.gross_sales_money && li.gross_sales_money.amount) || 0), 0);
   const tax = order.total_tax_money && order.total_tax_money.amount, total = order.total_money && order.total_money.amount;
   const subject = "Your order is confirmed · delivery " + (shortDate(m.delivery_date) || "");
