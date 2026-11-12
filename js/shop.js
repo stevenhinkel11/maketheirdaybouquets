@@ -2,7 +2,7 @@
    The Cloudflare Worker (worker/worker.js) repeats the delivery rules server-side and is the source of truth for prices. */
 (function () {
   // Set this to the deployed Worker URL, e.g. "https://mtd-checkout.YOURNAME.workers.dev/checkout"
-  const CHECKOUT_API = "";
+  const CHECKOUT_API = "https://mtd-checkout.stevenhinkel.workers.dev/checkout";
 
   const PRODUCTS = [
     {
