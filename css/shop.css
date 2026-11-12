@@ -75,3 +75,6 @@ input.bad{border-color:#a3341f}
 .msg{display:none;padding:16px 18px;border-radius:4px;background:#fdf3e1;border:1.5px solid var(--marigold)}
 .msg.show{display:block}
 .msg.err{background:#fbeeea;border-color:#a3341f;color:#7a2616}
+label.same{display:flex;align-items:center;gap:10px;font-weight:400;font-size:16px;letter-spacing:0;text-transform:none;cursor:pointer}
+label.same input{accent-color:var(--marigold);width:18px;height:18px}
+input[readonly]{background:#f1ebdf;color:#5d584d}

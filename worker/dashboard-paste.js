@@ -152,8 +152,12 @@ async function createPaymentLink(env, o) {
         note: buildNote(o)
       }
     }],
-    metadata: { delivery_date: o.deliveryDate, recipient: o.recipient.name.slice(0, 120), gift_message: (o.giftMessage || "").slice(0, 250) }
+    metadata: { delivery_date: o.deliveryDate, recipient: o.recipient.name.slice(0, 120) }
   };
+  // Square rejects empty metadata values, so only add the optional ones when they have text.
+  if (o.giftMessage) order.metadata.gift_message = o.giftMessage.slice(0, 250);
+  if (o.giftFrom) order.metadata.gift_from = o.giftFrom.slice(0, 60);
+  if (o.instructions) order.metadata.delivery_notes = o.instructions.slice(0, 200);
   if (useCatalog) order.pricing_options = { auto_apply_taxes: true };
   else {
     // Custom line items don't carry tax by themselves: attach the sales tax already set up in her Square account.

@@ -62,6 +62,15 @@ t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].deli
 t('location set', pl.order.location_id === 'LOC1');
 t('no buyer_email alongside fulfillment (Square rejects it)', !pl.pre_populated_data);
 t('customer email on fulfillment recipient for receipt', pl.order.fulfillments[0].delivery_details.recipient.email_address === 'sam@example.com');
+// optional fields empty -> no empty metadata values (Square rejects them)
+{
+  calls.length = 0; mockSquare([{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusion_type: 'ADDITIVE' } }]);
+  const b = base('2026-11-14'); b.giftMessage = ''; b.giftFrom = ''; b.instructions = '';
+  const o2 = validateOrder(b, before).order; await createPaymentLink(env, o2);
+  const md = calls.find(c => c.url.includes('payment-links')).body.order.metadata;
+  t('no empty metadata values when optional fields are blank', Object.values(md).every(v => String(v).length > 0));
+  t('gift message optional (order validates without it)', !validateOrder(b, before).error);
+}
 // strict: no tax configured -> refuse rather than undercharge (fresh module state needs a new tax cache, so use a new env path)
 let threw = false;
 {

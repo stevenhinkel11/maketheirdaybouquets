@@ -75,6 +75,7 @@
 
       <fieldset>
         <legend>Your details</legend>
+        <label class="same"><input type="checkbox" id="same"> Same name and phone as the recipient</label>
         <div class="field"><label for="cname">Your name <span class="req">*</span></label><input type="text" id="cname" autocomplete="name" required></div>
         <div class="two">
           <div class="field"><label for="cemail">Email <span class="req">*</span></label><input type="email" id="cemail" autocomplete="email" required></div>
@@ -138,6 +139,18 @@
     return filled && checkZip() && checkDate() && phoneOk($('rphone').value) && phoneOk($('cphone').value) && /^\S+@\S+\.\S+$/.test($('cemail').value.trim()) && Cart.get().length > 0;
   }
   const refresh = () => { $('pay').disabled = !allOk(); };
+  // "Same as recipient": copy the recipient's name and phone into the customer's, and keep them in sync while checked.
+  function syncSame() {
+    if (!$('same').checked) return;
+    $('cname').value = $('rname').value; $('cphone').value = $('rphone').value;
+  }
+  $('same').addEventListener('change', () => {
+    const on = $('same').checked;
+    $('cname').readOnly = on; $('cphone').readOnly = on;
+    if (on) syncSame(); refresh();
+  });
+  $('rname').addEventListener('input', () => { syncSame(); refresh(); });
+  $('rphone').addEventListener('input', () => { syncSame(); refresh(); });
   $('f').addEventListener('input', refresh); $('f').addEventListener('change', refresh);
   zipEl.addEventListener('input', () => { zipEl.value = zipEl.value.replace(/\D/g, '').slice(0, 5); refresh(); });
   refresh();
