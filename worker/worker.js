@@ -318,7 +318,11 @@ export async function handleWebhook(req, env) {
   let ev; try { ev = JSON.parse(raw); } catch (_) { return new Response("bad json", { status: 400 }); }
   const p = ev && ev.data && ev.data.object && ev.data.object.payment;
   // Only completed, non-refunded payments
-  if (!String(ev.type || "").startsWith("payment.") || !p || p.status !== "COMPLETED" || !p.order_id || (p.refunded_money && p.refunded_money.amount > 0)) return new Response("ignored", { status: 200 });
+  if (!String(ev.type || "").startsWith("payment.") || !p || p.status !== "COMPLETED" || !p.order_id) return new Response("ignored", { status: 200 });
+  // Refunds also trigger payment.updated (sometimes before refunded_money is filled in), so skip anything with a refund attached.
+  if ((p.refund_ids && p.refund_ids.length) || (p.refunded_money && p.refunded_money.amount > 0)) return new Response("ignored: refund", { status: 200 });
+  // Late or replayed events (older than 2 hours) must never produce a "new order" email.
+  if (p.created_at && Date.now() - Date.parse(p.created_at) > 2 * 60 * 60 * 1000) return new Response("ignored: old payment", { status: 200 });
   // Claim this payment BEFORE any async work, so notifications that arrive at the same moment can't all send an email.
   if (emailed.has(p.id)) return new Response("duplicate", { status: 200 });
   emailed.add(p.id);
