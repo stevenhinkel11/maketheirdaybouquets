@@ -28,7 +28,7 @@ const PRODUCTS = {
 // ZIP codes we deliver to: everywhere between Boulder Creek and Aptos (Santa Cruz County ZIPs, minus Watsonville). Keep in sync with js/shop.js.
 const ZIPS = {
   "95001": "Aptos", "95003": "Aptos", "95005": "Ben Lomond", "95006": "Boulder Creek", "95007": "Brookdale",
-  "95010": "Capitola", "95017": "Davenport", "95018": "Felton", "95019": "Freedom", "95041": "Mount Hermon",
+  "95010": "Capitola", "95017": "Davenport", "95018": "Felton", "95041": "Mount Hermon",
   "95060": "Santa Cruz", "95061": "Santa Cruz", "95062": "Santa Cruz", "95063": "Santa Cruz", "95064": "Santa Cruz",
   "95065": "Santa Cruz", "95066": "Scotts Valley", "95067": "Scotts Valley", "95073": "Soquel"
 };

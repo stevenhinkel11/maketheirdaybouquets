@@ -60,8 +60,8 @@ Add the product in **two** places: `PRODUCTS` in `js/shop.js` (what the shop dis
 `worker.js` to link it to an existing Square catalog item.) After editing `worker.js`, redeploy it.
 
 ## ZIP list source
-From zip-codes.com's Santa Cruz County page, minus Watsonville (19 ZIPs). Notes:
-- **95076 and 95077 (Watsonville)** are deliberately excluded. Customers outside the area are asked to email.
+From zip-codes.com's Santa Cruz County page, minus Watsonville and Freedom (18 ZIPs). Notes:
+- **95076 and 95077 (Watsonville) and 95019 (Freedom)** are deliberately excluded. Customers outside the area are asked to email.
 - **95033 (Los Gatos mountains)** partly touches Santa Cruz County. Not included. Add it to both `ZIPS` maps if wanted.
 - Some included ZIPs are PO-Box-style (95001, 95007, 95041, 95061, 95063, 95067, 95077); they're harmless to allow.
 - Check anything doubtful with the USPS ZIP lookup: https://tools.usps.com/zip-code-lookup.htm
