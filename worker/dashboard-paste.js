@@ -326,18 +326,23 @@ async function handleWebhook(req, env) {
   // Claim this payment BEFORE any async work, so notifications that arrive at the same moment can't all send an email.
   if (emailed.has(p.id)) return new Response("duplicate", { status: 200 });
   emailed.add(p.id);
-  if (env.ORDERS_KV && await env.ORDERS_KV.get("sent:" + p.id)) return new Response("duplicate", { status: 200 });
+  // Durable claim (survives restarts and works across Cloudflare instances). Written BEFORE sending; removed if sending fails.
+  const kvKey = "sent:" + p.id;
+  if (env.ORDERS_KV) {
+    if (await env.ORDERS_KV.get(kvKey)) return new Response("duplicate", { status: 200 });
+    await env.ORDERS_KV.put(kvKey, String(Date.now()), { expirationTtl: 60 * 60 * 24 * 14 });
+  }
+  const release = () => { emailed.delete(p.id); if (env.ORDERS_KV) return env.ORDERS_KV.delete(kvKey); };
   const { ok, j } = await sqGet(env, "/v2/orders/" + encodeURIComponent(p.order_id));
-  if (!ok || !j.order) { emailed.delete(p.id); console.log("order fetch failed", JSON.stringify(j)); return new Response("order fetch failed", { status: 500 }); }
+  if (!ok || !j.order) { await release(); console.log("order fetch failed", JSON.stringify(j)); return new Response("order fetch failed", { status: 500 }); }
   if (!(j.order.metadata && j.order.metadata.delivery_date)) return new Response("not a website order", { status: 200 });
   const { subject, html, text } = buildEmail(j.order, p);
-  if (!env.RESEND_API_KEY || !env.NOTIFY_TO) { emailed.delete(p.id); console.log("email not configured"); return new Response("email not configured", { status: 500 }); }
+  if (!env.RESEND_API_KEY || !env.NOTIFY_TO) { await release(); console.log("email not configured"); return new Response("email not configured", { status: 500 }); }
   // Square sends payment.updated several times per payment (and Cloudflare may run several instances at once), so every
   // email carries an idempotency key tied to the payment: Resend ignores repeats of the same key.
   const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json", "Idempotency-Key": "owner-" + p.id },
     body: JSON.stringify({ from: env.NOTIFY_FROM || "Make Their Day Orders <onboarding@resend.dev>", to: env.NOTIFY_TO.split(",").map(s => s.trim()), subject, html, text, reply_to: (j.order.metadata.buyer_email || undefined) }) });
-  if (!r.ok) { emailed.delete(p.id); console.log("resend failed", r.status, await r.text()); return new Response("email failed", { status: 500 }); }
-  if (env.ORDERS_KV) await env.ORDERS_KV.put("sent:" + p.id, "1", { expirationTtl: 60 * 60 * 24 * 14 });
+  if (!r.ok) { await release(); console.log("resend failed", r.status, await r.text()); return new Response("email failed", { status: 500 }); }
 
   // Customer confirmation (needs a verified sending domain: set CUSTOMER_FROM, e.g. "Make Their Day Bouquets <orders@maketheirdaybouquets.com>").
   // A failure here never blocks the owner email, which has already been sent.
