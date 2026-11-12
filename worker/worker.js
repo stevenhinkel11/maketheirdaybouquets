@@ -12,9 +12,8 @@
 const PRODUCTS = {
   "luxury-bouquet": {
     name: "Luxury Bouquet",
-    price: 10000,                 // cents, used only if the Square catalog item can't be found
-    squareName: "Luxury Bouquet", // name of the item in your Square catalog (taxes come from the catalog item)
-    squareVariationId: ""         // optional: paste the Square item variation ID to skip the lookup
+    price: 10000                  // cents. Products live on the website; you do NOT need to create them in Square.
+    // Optional: add  squareName: "Item name in Square"  to use an existing Square catalog item instead.
   }
 };
 
@@ -99,7 +98,7 @@ async function sq(env, path, body) {
 }
 const variationCache = {};
 async function variationIdFor(env, product) {
-  if (product.squareVariationId) return product.squareVariationId;
+  if (!product.squareName) return "";           // default: no Square catalog item needed
   if (variationCache[product.squareName]) return variationCache[product.squareName];
   const { ok, j } = await sq(env, "/v2/catalog/search-catalog-items", { text_filter: product.squareName, limit: 5 });
   if (!ok) return "";
@@ -107,6 +106,19 @@ async function variationIdFor(env, product) {
   const v = item && item.item_data.variations && item.item_data.variations[0];
   if (v) variationCache[product.squareName] = v.id;
   return v ? v.id : "";
+}
+
+/** Finds the sales tax configured in her Square account (Dashboard → Account & Settings → Sales taxes). */
+let taxCache = null;
+export async function salesTaxId(env) {
+  if (taxCache) return taxCache;
+  const { ok, j } = await sq(env, "/v2/catalog/search", { object_types: ["TAX"] });
+  if (!ok) return "";
+  const taxes = (j.objects || []).filter(t => t.tax_data && t.tax_data.enabled !== false && !t.is_deleted && (t.tax_data.inclusion_type || "ADDITIVE") === "ADDITIVE");
+  const want = (env.SQUARE_TAX_NAME || "").toLowerCase();
+  const pick = (want && taxes.find(t => t.tax_data.name.toLowerCase() === want)) || taxes[0];
+  if (pick) taxCache = pick.id;
+  return pick ? pick.id : "";
 }
 
 export function buildNote(o) {
@@ -125,7 +137,7 @@ export async function createPaymentLink(env, o) {
     lineItems.push(vid ? { catalog_object_id: vid, quantity: String(it.qty) }
                        : { name: p.name, quantity: String(it.qty), base_price_money: { amount: p.price, currency: "USD" } });
   }
-  const useCatalog = lineItems.every(l => l.catalog_object_id);
+  const useCatalog = lineItems.length > 0 && lineItems.every(l => l.catalog_object_id);
   const order = {
     location_id: env.SQUARE_LOCATION_ID,
     reference_id: ("MTD-" + o.deliveryDate).slice(0, 40),
@@ -143,6 +155,12 @@ export async function createPaymentLink(env, o) {
     metadata: { delivery_date: o.deliveryDate, recipient: o.recipient.name.slice(0, 120), gift_message: (o.giftMessage || "").slice(0, 250) }
   };
   if (useCatalog) order.pricing_options = { auto_apply_taxes: true };
+  else {
+    // Custom line items don't carry tax by themselves: attach the sales tax already set up in her Square account.
+    const taxId = await salesTaxId(env);
+    if (taxId) order.taxes = [{ uid: "sales-tax", catalog_object_id: taxId, scope: "ORDER" }];
+    else if (env.REQUIRE_TAX !== "false") { console.log("No sales tax found in Square"); throw new Error("no-tax"); }
+  }
   const { ok, j } = await sq(env, "/v2/online-checkout/payment-links", {
     idempotency_key: crypto.randomUUID(),
     order,

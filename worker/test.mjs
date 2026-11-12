@@ -1,4 +1,4 @@
-import { validateOrder, earliestDate, dateProblem, buildNote, normalizePhone } from './worker.js';
+import { validateOrder, earliestDate, dateProblem, buildNote, normalizePhone, createPaymentLink } from './worker.js';
 const out = typeof print === 'function' ? print : console.log;
 let fail = 0;
 const t = (name, cond) => { out((cond ? 'PASS ' : 'FAIL ') + name); if (!cond) fail++; };
@@ -33,4 +33,39 @@ zips.forEach(z => { const b = base('2026-11-14'); b.recipient.zip = z; t('zip ok
 { const b = base('2026-11-14'); b.website = 'spam'; t('honeypot rejected', !!validateOrder(b, before).error); }
 t('phone normalize', normalizePhone('(831) 555-0123') === '+18315550123' && normalizePhone('1-831-555-0123') === '+18315550123');
 t('note contains message & contact', /CARD MESSAGE: Hi/.test(buildNote(validateOrder(base('2026-11-14'), before).order)));
+
+// ---- Square request shape (mocked fetch) ----
+globalThis.crypto = globalThis.crypto || {}; if (!crypto.randomUUID) crypto.randomUUID = () => 'test-key';
+const calls = [];
+function mockSquare(taxes) {
+  globalThis.fetch = async (url, init) => {
+    const body = JSON.parse(init.body); calls.push({ url, body });
+    let j = {};
+    if (url.endsWith('/v2/catalog/search')) j = { objects: taxes };
+    if (url.endsWith('/v2/online-checkout/payment-links')) j = { payment_link: { url: 'https://square.link/test' } };
+    return { ok: true, json: async () => j };
+  };
+}
+const env = { SQUARE_ACCESS_TOKEN: 'x', SQUARE_LOCATION_ID: 'LOC1', SQUARE_ENV: 'sandbox' };
+const good = validateOrder(base('2026-11-14'), before).order;
+mockSquare([{ id: 'TAXID', tax_data: { name: 'Sales Tax', enabled: true, inclusion_type: 'ADDITIVE' } }]);
+const res = await createPaymentLink(env, good);
+const pl = calls.find(c => c.url.includes('payment-links')).body;
+t('payment link url returned', res.url === 'https://square.link/test');
+t('uses sandbox host', calls[0].url.startsWith('https://connect.squareupsandbox.com'));
+t('custom line item with server price', pl.order.line_items[0].base_price_money.amount === 10000 && pl.order.line_items[0].name === 'Luxury Bouquet');
+t('square tax attached', pl.order.taxes && pl.order.taxes[0].catalog_object_id === 'TAXID');
+t('delivery fulfillment scheduled', pl.order.fulfillments[0].type === 'DELIVERY' && pl.order.fulfillments[0].delivery_details.schedule_type === 'SCHEDULED');
+t('deliver_at has PT offset', pl.order.fulfillments[0].delivery_details.deliver_at === '2026-11-14T12:00:00-08:00');
+t('address in CA with zip', pl.order.fulfillments[0].delivery_details.recipient.address.postal_code === '95060' && pl.order.fulfillments[0].delivery_details.recipient.address.administrative_district_level_1 === 'CA');
+t('note has card message', /CARD MESSAGE: Hi/.test(pl.order.fulfillments[0].delivery_details.note));
+t('location set', pl.order.location_id === 'LOC1');
+// strict: no tax configured -> refuse rather than undercharge (fresh module state needs a new tax cache, so use a new env path)
+let threw = false;
+{
+  const m = await import('./worker.js?notax');
+  mockSquare([]);
+  try { await m.createPaymentLink(env, good); } catch (e) { threw = true; }
+}
+t('refuses to create order when no tax is configured', threw);
 out(fail ? ('FAILED: ' + fail) : 'ALL PASSED');

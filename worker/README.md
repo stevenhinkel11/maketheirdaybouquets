@@ -15,9 +15,10 @@ Items and total, recipient name/phone/address, delivery date, gift message, deli
 2. Open the app → **Credentials**. Keep **Sandbox** selected for testing:
    - copy the **Sandbox Access token**
    - in **Locations**, copy the sandbox **Location ID**
-3. Make sure the "Luxury Bouquet" item exists in the Square catalog of the account you're testing with. In the real
-   account, set its **tax** (Square Dashboard → Items → Taxes) so Square applies sales tax. The Worker looks the item up
-   by name, so the name in Square must match exactly.
+3. You do **not** need to create bouquets in Square. Products live on the website. But Square must have a **sales tax**
+   set up (Dashboard → Account & Settings → Sales taxes, or Items → Taxes). The Worker attaches that tax to every
+   order. If no tax exists it refuses to create the order (so nothing is ever undercharged). In the sandbox test
+   dashboard, create a tax too. If you have more than one tax, set `SQUARE_TAX_NAME` to the one to use.
 
 ### 2. Cloudflare (free account)
 1. Create an account at https://dash.cloudflare.com (free plan is fine).
@@ -54,8 +55,9 @@ Push to GitHub. Test with Square's sandbox test card (4111 1111 1111 1111, any f
 - Quantity 1–10 per item, honeypot field, CORS limited to the site's domains.
 
 ## Updating products
-Add the product in **three** places: `PRODUCTS` in `js/shop.js` (what the shop displays), `PRODUCTS` in `worker.js`
-(what the server trusts), and as an item in the Square catalog (name must match `squareName`).
+Add the product in **two** places: `PRODUCTS` in `js/shop.js` (what the shop displays) and `PRODUCTS` in `worker.js`
+(what the server trusts for price). Nothing needs to be created in Square. (Optional: add `squareName` to a product in
+`worker.js` to link it to an existing Square catalog item.) After editing `worker.js`, redeploy it.
 
 ## ZIP list source
 From zip-codes.com's Santa Cruz County page (21 ZIPs). Notes:
