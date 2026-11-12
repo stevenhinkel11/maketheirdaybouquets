@@ -21,8 +21,7 @@ const PRODUCTS = {
   "lavender-love-vase": { name: "Lavender Love, Vase", price: 10000 },
   "lavender-love-hand-wrapped": { name: "Lavender Love, Hand Wrapped", price: 7500 },
   "rustic-romance": { name: "Rustic Romance", price: 5500 },
-  "golden-hour-vase": { name: "Golden Hour, Vase", price: 10000 },
-  "test-bouquet": { name: "Test Bouquet ($1 test)", price: 100 }   // TEMPORARY: live end-to-end test, remove afterwards
+  "golden-hour-vase": { name: "Golden Hour, Vase", price: 10000 }
 };
 
 // ZIP codes we deliver to: everywhere between Boulder Creek and Aptos (Santa Cruz County ZIPs, minus Watsonville). Keep in sync with js/shop.js.

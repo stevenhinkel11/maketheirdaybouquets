@@ -47,10 +47,6 @@
     {
       id: "golden-hour-vase", name: "Golden Hour, Vase", price: 10000,
       description: "Exact flowers vary by season.", image: "assets/img/7165.jpg", image800: "assets/img/800/7165.jpg", alt: "Pink gerbera and yellow roses in a bowl"
-    },
-    { // TEMPORARY hidden $1 product for a live end-to-end test. Not shown on the site.
-      id: "test-bouquet", name: "Test Bouquet ($1 test)", price: 100, hidden: true,
-      description: "Live checkout test.", image: "assets/img/pink-bowl.jpg", image800: "assets/img/800/pink-bowl.jpg", alt: ""
     }
   ];
 
