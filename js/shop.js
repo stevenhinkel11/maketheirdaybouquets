@@ -47,6 +47,10 @@
     {
       id: "golden-hour-vase", name: "Golden Hour, Vase", price: 10000,
       description: "Exact flowers vary by season.", image: "assets/img/7165.jpg", image800: "assets/img/800/7165.jpg", alt: "Pink gerbera and yellow roses in a bowl"
+    },
+    {
+      id: "mini-autumn-gourd", name: "Mini Autumn Gourd", price: 2500,
+      description: "A mini autumn gourd planted with succulents.", image: "assets/img/mini-autumn-gourd.jpg", image800: "assets/img/800/mini-autumn-gourd.jpg", alt: "A mini autumn gourd planted with pink and green succulents"
     }
   ];
 
