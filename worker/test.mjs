@@ -140,3 +140,4 @@ let threw = false;
 }
 t('refuses to create order when no tax is configured', threw);
 out(fail ? ('FAILED: ' + fail) : 'ALL PASSED');
+if (fail && typeof process !== 'undefined') process.exit(1);
