@@ -156,6 +156,16 @@
   .mtd-drawer .btn{text-align:center;padding:15px 24px}
   .mtd-drawer .btn.line{background:transparent;color:var(--ink);border-color:var(--ink)}
   .mtd-drawer .btn.line:hover{background:var(--ink);color:#fff}
+  /* reviews */
+  .reviews{max-width:1000px;margin:clamp(70px,10vw,140px) auto 0;padding:0 var(--gutter);text-align:center}
+  .reviews h2{font:italic 400 clamp(36px,4.6vw,56px)/1.05 var(--serif);margin-bottom:clamp(22px,3vw,36px)}
+  .reviews .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(14px,2vw,26px);justify-content:center;max-width:560px;margin:0 auto}
+  .reviews .cards:has(.review:nth-child(2)){max-width:1000px}
+  .review{background:#fbf8f2;border:1px solid rgba(43,42,38,.14);border-radius:8px;padding:clamp(24px,3vw,36px) clamp(20px,2.6vw,32px);text-align:center}
+  .review .stars{color:var(--marigold);font-size:22px;letter-spacing:.14em;margin-bottom:14px}
+  .review blockquote{font:italic 400 clamp(21px,2.2vw,26px)/1.35 var(--serif);margin:0 0 16px}
+  .review figcaption{font-size:14px;color:var(--muted)}
+  .review figcaption span{letter-spacing:.04em}
   .logo{width:clamp(140px,18vw,220px);height:auto;aspect-ratio:1;border-radius:50%;margin:0 auto clamp(28px,4vw,48px)}
   .band{position:relative;margin-top:clamp(70px,10vw,140px);height:min(90vh,820px);overflow:hidden}
   .band img{filter:brightness(1.14) saturate(1.1);object-position:50% 45%}
@@ -309,6 +319,17 @@
     <figure class="rv"><img data-n="12" src="assets/img/succulent-pumpkin-deck.jpg" srcset="assets/img/800/succulent-pumpkin-deck.jpg 800w, assets/img/1200/succulent-pumpkin-deck.jpg 1200w, assets/img/succulent-pumpkin-deck.jpg 1086w" sizes="(max-width:720px) 46vw, 380px" loading="lazy" alt="A pumpkin planted with succulents and moss on a striped table on a sunny deck"></figure>
   </div>
   <a class="btn solid rv" href="order.html?type=pumpkin">Order a Custom Pumpkin Arrangement</a>
+</section>
+
+<section class="reviews">
+  <h2 class="rv">Kind words</h2>
+  <div class="cards">
+    <figure class="review rv">
+      <div class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</div>
+      <blockquote>She is very kind. I asked her to surprise my mother with a small decorative pumpkin, and she did—she has great talent!!</blockquote>
+      <figcaption>Anna A. <span>· Google review</span></figcaption>
+    </figure>
+  </div>
 </section>
 
 <section class="close">
